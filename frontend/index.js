@@ -2,27 +2,29 @@
 
 const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
-
+const testChar = document.querySelector('img#test-sprite')
 
 
 // Helper functions
 function moveCharacter (e) {
     switch (e.keyCode) {
         case 37: // Left
-        character.className = 'facing_left'
+        testChar.className = 'facing_left'
+        testChar.style.left = parseInt(testChar.style.left) - 100 + 'px'
+        console.log(testChar.style.left)
 
         break;
 
         case 38: // Up
-        character.className = 'facing_up'
+        testChar.className = 'facing_up'
         break;
 
         case 39: // Right 
-        character.className = 'facing_right'
+        testChar.className = 'facing_right'
         break;
 
         case 40: // Down 
-        character.className = 'facing_down'
+        testChar.className = 'facing_down'
         break;
     }
 }

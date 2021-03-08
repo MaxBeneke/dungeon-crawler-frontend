@@ -3,8 +3,30 @@ div#map {
 }
 
 img#maze {
-    width: 100%;
-    height: 100%;
+    border: 1px solid black;
+    display: grid;
+    grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    width: 50%;
+    height: 50%;
+}
+
+div#sprite-div {
+    width: 64px;
+    height: 64px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1
+}
+
+img#test-sprite {
+    position: absolute;
+    top: 200px;
+    left: 300px;
+    width: 64px;
+    height: 64px;
+    z-index: 1;
 }
 
 div#character-container {
