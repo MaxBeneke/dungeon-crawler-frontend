@@ -1,14 +1,30 @@
 div#map {
-    position: relative;
-}
+    border: 2px solid red;
+    margin-left: auto;
+    margin-right: auto;
 
-img#maze {
-    border: 1px solid black;
     display: grid;
     grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
     grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
-    width: 50%;
-    height: 50%;
+    width: 640px;
+    height: 640px;
+    
+}
+
+div.wall {
+    background-color: black;
+}
+
+div.grid-item {
+    border: 2px solid purple
+}
+
+img#maze {
+    object-fit: fill;
+    object-position: 0 0 ;
+
+    width: 640px;
+    height: 640px;
 }
 
 div#sprite-div {
@@ -21,9 +37,6 @@ div#sprite-div {
 }
 
 img#test-sprite {
-    position: absolute;
-    top: 200px;
-    left: 300px;
     width: 64px;
     height: 64px;
     z-index: 1;
@@ -38,25 +51,5 @@ div#character-container {
     right: -100px;
     z-index: 1;
 
-}
-
-.facing_up{
-    position: absolute;
-    top: 0px;
-}
-
-.facing_left {
-    position: absolute;
-    top: -64px;
-}
-
-.facing_down {
-    position: absolute;
-    top: -128px;
-}
-
-.facing_right {
-    position: absolute;
-    top: -192px;
 }
 
