@@ -18,19 +18,23 @@ div#character-container {
 
 }
 
-img#character .facing_up{
+.facing_up{
     position: absolute;
+    top: 0px;
 }
 
 .facing_left {
+    position: absolute;
     top: -64px;
 }
 
 .facing_down {
+    position: absolute;
     top: -128px;
 }
 
 .facing_right {
+    position: absolute;
     top: -192px;
 }
 
