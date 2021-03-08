@@ -12,7 +12,8 @@ div#map {
 }
 
 div.wall {
-    background-color: black;
+    /* background-color: black; */
+    background: url('assets/wall.png')
 }
 
 div.grid-item {
@@ -53,3 +54,24 @@ div#character-container {
 
 }
 
+.facing_right {
+    transform: scaleX(-1)
+}
+
+.facing_left {
+    transform: scaleX(1)
+}
+
+
+.enemy {
+    width: 64px;
+    height: 64px;
+    background: url('assets/boss.png');
+}
+
+.treasure {
+    width: 64px;
+    height: 64px;
+    background: url('assets/treasure.png');
+    image-rendering: pixelated;
+}

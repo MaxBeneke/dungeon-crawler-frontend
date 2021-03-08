@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
     startDiv.appendChild(testChar)
+    spawnEnemies()
+    spawnTreasures()
 })
 
 const createGridDivs = () => {
@@ -117,6 +119,7 @@ function moveDown() {
 function moveCharacter(e) {
     switch (e.keyCode) {
         case 37: // Left
+        testChar.className = "facing_left"
             moveLeft()
             break;
 
@@ -125,6 +128,7 @@ function moveCharacter(e) {
             break;
 
         case 39: // Right 
+        testChar.className = "facing_right"
             moveRight()
             break;
 
@@ -136,6 +140,32 @@ function moveCharacter(e) {
             return;
     }
 }
+
+
+function spawnEnemies() {
+    for (let i = 0; i < 5; i++) {
+    //     const enemy = document.createElement('img')
+    //     enemy.className = "enemy"
+    //     enemy.src = "assets/boss.png"
+        const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
+        if (!randomDiv.classList.contains('wall')) { 
+            randomDiv.classList.add('enemy')
+        }
+    }
+}
+
+function spawnTreasures() {
+    for (let i = 0; i < 5; i++) {
+        // const treasure = document.createElement('img')
+        // treasure.className = "treasure"
+        // treasure.src = "assets/treasure.png"
+        const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
+        if (!randomDiv.classList.contains('wall') && !randomDiv.classList.contains('enemy')) { 
+            randomDiv.classList.add('treasure')
+        }
+    }
+}
+
 
 
 document.addEventListener('keydown', moveCharacter)
