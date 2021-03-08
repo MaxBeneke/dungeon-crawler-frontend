@@ -1,6 +1,7 @@
 // Create global variables
 
 const mapContainer = document.querySelector('div#map')
+const battleContainer = document.querySelector('div#battle')
 const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
@@ -16,6 +17,12 @@ function createWalls() {
     }
 }
 
+// document.addEventListener('click', () => {startBattle()})
+// startBattle should take 2 args. Player and Enemy
+function startBattle() {
+    mapContainer.style.display == "grid" ? mapContainer.style.display = "none" : mapContainer.style.display = "grid"
+    battleContainer.style.display == "none" ? battleContainer.style.display = "block" : battleContainer.style.display = "none"
+}
 
 // DOM CONTENT
 document.addEventListener('DOMContentLoaded', (event) => {

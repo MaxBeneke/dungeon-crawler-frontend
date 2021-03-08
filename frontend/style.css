@@ -11,6 +11,15 @@ div#map {
     
 }
 
+div#battle {
+    display: none;
+    width: 640px;
+    height: 640px;
+    border: 2px solid blue;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 div.wall {
     /* background-color: black; */
     background: url('assets/wall.png')
