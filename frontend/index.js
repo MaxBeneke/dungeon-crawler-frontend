@@ -6,22 +6,54 @@ const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
 const battleButtons = document.querySelector('div#battle-buttons')
-let position = { x: 1, y: 1 }
+const logBox = document.querySelector('div#log')
+const battleCommand = document.querySelector('div#battle-command')
 let wallArray = {
     x: [10, 1, 2, 3, 4, 6, 7, 8, 10, 6, 7, 8, 10, 2, 3, 4, 6, 8, 10, 2, 3, 8, 10, 2, 3, 5, 6, 8, 10, 2, 6, 6, 8, 9, 1, 2, 3, 5, 6, 7, 8, 9],
     y: [1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9]
 }
 
-const logBox = document.querySelector('div#log')
-const battleCommand = document.querySelector('div#battle-command')
-
+function getRandomNum(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 function createWalls() {
     for (let i = 0; i < wallArray.x.length; i++) {
-
         const wallDiv = document.querySelector(`div#gi${wallArray.x[i]}-${wallArray.y[i]}`)
         wallDiv.classList.add("wall")
     }
+}
+
+function fetchEnemy(id) {
+    fetch(`http://localhost:3000/enemies/${id}`)
+        .then(res => res.json)
+        .then(enemy => enemy)
+}
+
+function fetchPlayer() {
+    fetch(`http://localhost:3000/players/1`)
+        .then(res => res.json)
+        .then(player => player)
+}
+
+function updatePlayer(player) {
+    fetch(`http://localhost:3000/players/1`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(player)
+    })
+        .then(res => res.json())
+        .then(updatedPlayer => updatedPlayer)
+}
+
+function updateEnemy(enemy) {
+    fetch(`http://localhost:3000/enemies/${enemy.id}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(enemy)
+    })
+        .then(res => res.json())
+        .then(updatedEnemy => updatedEnemy)
 }
 
 document.addEventListener('click', () => { startBattle() })
@@ -30,7 +62,6 @@ function startBattle(id) {
     mapContainer.style.display == "grid" ? mapContainer.style.display = "none" : mapContainer.style.display = "grid"
     battleContainer.style.display == "none" ? battleContainer.style.display = "block" : battleContainer.style.display = "none"
     battleCommand.style.display == "none" ? battleCommand.style.display = "block" : battleCommand.style.display = "none"
-
 }
 
 battleButtons.addEventListener('click', e => {
@@ -43,7 +74,7 @@ battleButtons.addEventListener('click', e => {
             battleSpecial(enemyId)
             break;
         case "battle-item":
-            showBattleItems()
+            showItems()
             break;
         case "run":
             battleRun()
@@ -52,12 +83,28 @@ battleButtons.addEventListener('click', e => {
 })
 
 function battleAttack(id) {
-    const attackMultiplier = ((PLAYER.level - 1) * .25) + 1
-    fetch(`http://localhost:3000/enemies/${id}`)
-        .then(res => res.json)
-        .then(enemy => {
-            ///// CHANGE ENEMY HP, CHECK FOR -NUM or 0 
-        })
+    const player = fetchPlayer()
+    const enemy = fetchEnemy(id)
+    const atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
+    enemy.hp -= atk
+    const updatedEnemy = updateEnemy(enemy)
+    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
+}
+
+function battleSpecial(id) {
+    const player = fetchPlayer()
+    const enemy = fetchEnemy(id)
+    const atk = Math.ceil(1.5 * (player.multiplier * getRandomNum(2, 6)))
+    enemy.hp -= atk
+    const updatedEnemy = updateEnemy(enemy)
+    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy) 
+}
+
+function showItems() {
+    // Render the Item Div 
+}
+
+function useItem(itemId) {
 }
 
 // DOM CONTENT
