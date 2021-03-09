@@ -8,6 +8,10 @@ const testChar = document.querySelector('img#test-sprite')
 let position = { x: 1, y: 1 }
 let wallArray = { x: [2, 2, 2, 3], y: [1, 2, 3, 3] }
 
+const logBox = document.querySelector('div#log')
+const battleCommand = document.querySelector('div#battle-command')
+
+
 function createWalls() {
     for (let i = 0; i < wallArray.x.length; i++) {
 
@@ -17,11 +21,13 @@ function createWalls() {
     }
 }
 
-// document.addEventListener('click', () => {startBattle()})
+document.addEventListener('click', () => {startBattle()})
 // startBattle should take 2 args. Player and Enemy
-function startBattle() {
+function startBattle(id) {
     mapContainer.style.display == "grid" ? mapContainer.style.display = "none" : mapContainer.style.display = "grid"
     battleContainer.style.display == "none" ? battleContainer.style.display = "block" : battleContainer.style.display = "none"
+    battleCommand.style.display == "none" ? battleCommand.style.display = "block" : battleCommand.style.display = "none"
+
 }
 
 // DOM CONTENT
@@ -90,12 +96,25 @@ function checkWall(direction) {
     }
 }
 
+function checkGrid() {
+    const targetDiv = testChar.closest('div')
+    if (testChar.closest('div').classList.contains('treasure')) {    
+        const id = targetDiv.dataset.id      
+        pickupTreasure(id)
+    }
+    else if (testChar.closest('div').classList.contains('enemy')) {
+        const id = targetDiv.dataset.id
+        startBattle(id)
+    }
+}
+
 function moveLeft() {
     if (checkWall('left')) {
         position.x -= 1
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
     }
+    checkGrid()
 }
 
 
@@ -105,6 +124,7 @@ function moveRight() {
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
     }
+    checkGrid()
 }
 
 function moveUp() {
@@ -113,6 +133,7 @@ function moveUp() {
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
     }
+    checkGrid()
 }
 
 function moveDown() {
@@ -121,6 +142,7 @@ function moveDown() {
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
     }
+    checkGrid()
 }
 
 function moveCharacter(e) {
@@ -151,12 +173,13 @@ function moveCharacter(e) {
 
 function spawnEnemies() {
     for (let i = 0; i < 5; i++) {
-    //     const enemy = document.createElement('img')
-    //     enemy.className = "enemy"
-    //     enemy.src = "assets/boss.png"
+        // const enemy = document.createElement('img')
+        // enemy.className = "enemy"
+        // enemy.src = "assets/boss.png"
         const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
         if (!randomDiv.classList.contains('wall')) { 
             randomDiv.classList.add('enemy')
+            randomDiv.dataset.id = "1"
         }
     }
 }
@@ -169,9 +192,26 @@ function spawnTreasures() {
         const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
         if (!randomDiv.classList.contains('wall') && !randomDiv.classList.contains('enemy')) { 
             randomDiv.classList.add('treasure')
+            randomDiv.dataset.id = "1"
         }
     }
 }
+
+function pickupTreasure(id) {
+        fetch('localhost:3000/possessions/', {
+        method: 'POST',
+        headers: {'Content-Type': "application/json"},
+        body: JSON.stringify({player_id: 1, item_id: id})
+        })
+        .then (res => res.json())
+        .then(possession => console.log(possession.item))
+
+        logBox.textContent = "Pick up item.quantity item.name"
+
+}
+
+
+
 
 
 

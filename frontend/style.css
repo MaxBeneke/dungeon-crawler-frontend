@@ -20,6 +20,11 @@ div#battle {
     margin-right: auto;
 }
 
+div#battle-command {
+    display: none;
+    border: 2px solid blue;
+}
+
 div.wall {
     /* background-color: black; */
     background: url('assets/wall.png')
