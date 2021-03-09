@@ -21,35 +21,26 @@
 /* Hide battle map and battle command at default, display on click */
 #battle.battle-start {
     display: none;
+    margin-top: 50px;
     height: 640px;
+    width: 640px;
     border: 2px solid blue;
-    width: 50%;
-    margin: auto;
 }
 
 #battle-command.battle-start {
     display: none;
-    height: 100px;
-    width: 100px;
+    height: 400px;
+    width: 200px;
+    margin-right: 250px;
 }
 
 /* Style the assets */
-
 div.wall {
-    /* background-color: black; */
     background: url('assets/wall.png')
 }
 
 div.grid-item {
     border: 2px solid purple
-}
-
-img#maze {
-    object-fit: fill;
-    object-position: 0 0 ;
-
-    width: 640px;
-    height: 640px;
 }
 
 div#sprite-div {
@@ -67,17 +58,7 @@ img#test-sprite {
     z-index: 1;
 }
 
-div#character-container {
-    height: 64px;
-    width: 64px;
-    overflow: hidden;
-    position: relative;
-    top: 100px;
-    right: -100px;
-    z-index: 1;
-
-}
-
+/* Style the player */
 .facing_right {
     transform: scaleX(-1)
 }
@@ -86,13 +67,19 @@ div#character-container {
     transform: scaleX(1)
 }
 
-
+/* Style the enemies */
 .enemy {
     width: 64px;
     height: 64px;
     background: url('assets/boss.png');
 }
 
+div#battle img {
+    height: 640px;
+    width: 640px;
+}
+
+/* Style the items */
 .treasure {
     width: 64px;
     height: 64px;
@@ -100,20 +87,6 @@ div#character-container {
     image-rendering: pixelated;
 }
 
-
-div#world-buttons {
-    position: fixed;
-    top: 350px;
-    left: 170px;
-}
-
-
-div#world-buttons button {
-    padding: 10px;
-    margin: 5px 0px;
-    width: 150px;
-    background: transparent;
-}
 
 /* Style the log box */
 
@@ -127,4 +100,27 @@ div#log {
     text-align: center;
     border-radius: 5px;
     border: 2px solid black;
+}
+
+/* Style the buttons */
+
+div#world-buttons {
+    position: fixed;
+    top: 350px;
+    left: 170px;
+}
+
+div#battle-buttons {
+    position: fixed;
+    top: 350px;
+    left: 170px;
+    margin-right: 200px;
+}
+
+div#battle-command div#battle-buttons button, div#command div#world-buttons button {
+    padding: 20px;
+    margin: 5px;
+    width: 150px;
+    border-radius: 10px;
+    background: transparent;
 }
