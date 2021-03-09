@@ -5,10 +5,12 @@ const battleContainer = document.querySelector('div#battle')
 const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
+
 let position = { x: 1, y: 1 }
 let wallArray = { x: [2, 2, 2, 3], y: [1, 2, 3, 3] }
 
 const logBox = document.querySelector('div#log')
+const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 
 
@@ -25,8 +27,9 @@ document.addEventListener('click', () => {startBattle()})
 // startBattle should take 2 args. Player and Enemy
 function startBattle(id) {
     mapContainer.style.display == "grid" ? mapContainer.style.display = "none" : mapContainer.style.display = "grid"
-    battleContainer.style.display == "none" ? battleContainer.style.display = "block" : battleContainer.style.display = "none"
-    battleCommand.style.display == "none" ? battleCommand.style.display = "block" : battleCommand.style.display = "none"
+    battleContainer.style.display == "none" ? battleContainer.style.display = "inline-block" : battleContainer.style.display = "none"
+    battleCommand.style.display == "none" ? battleCommand.style.display = "inline-block" : battleCommand.style.display = "none"
+    worldCommand.style.display == "inline-block" ? worldCommand.style.display = "none" : worldCommand.style.display = "inline-block"
 
 }
 
