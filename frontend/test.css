@@ -1,0 +1,126 @@
+/* Show world map and world command at default, hide on click */
+#map.map-start {
+    border: 2px solid red;
+    margin-left: auto;
+    margin-right: auto;
+
+    display: grid;
+    grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
+    width: 640px;
+    height: 640px;
+}
+
+#command.map-start {
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+}
+
+
+/* Hide battle map and battle command at default, display on click */
+#battle.battle-start {
+    display: none;
+    margin-top: 50px;
+    height: 640px;
+    width: 640px;
+    border: 2px solid blue;
+}
+
+#battle-command.battle-start {
+    display: none;
+    height: 400px;
+    width: 200px;
+    margin-right: 250px;
+}
+
+/* Style the assets */
+div.wall {
+    background: url('assets/wall.png')
+}
+
+div.grid-item {
+    border: 2px solid purple
+}
+
+div#sprite-div {
+    width: 64px;
+    height: 64px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1
+}
+
+img#test-sprite {
+    width: 64px;
+    height: 64px;
+    z-index: 1;
+}
+
+/* Style the player */
+.facing_right {
+    transform: scaleX(-1)
+}
+
+.facing_left {
+    transform: scaleX(1)
+}
+
+/* Style the enemies */
+.enemy {
+    width: 64px;
+    height: 64px;
+    background: url('assets/boss.png');
+}
+
+div#battle img {
+    height: 640px;
+    width: 640px;
+}
+
+/* Style the items */
+.treasure {
+    width: 64px;
+    height: 64px;
+    background: url('assets/treasure.png');
+    image-rendering: pixelated;
+}
+
+
+/* Style the log box */
+
+div#log {
+    position: fixed;
+    bottom: 0px;
+    left: 500px;
+
+    height: 30px;
+    width: 600px;
+    text-align: center;
+    border-radius: 5px;
+    border: 2px solid black;
+}
+
+/* Style the buttons */
+
+div#world-buttons {
+    position: fixed;
+    top: 350px;
+    left: 170px;
+}
+
+div#battle-buttons {
+    position: fixed;
+    top: 350px;
+    left: 170px;
+    margin-right: 200px;
+}
+
+div#battle-command div#battle-buttons button, div#command div#world-buttons button {
+    padding: 20px;
+    margin: 5px;
+    width: 150px;
+    border-radius: 10px;
+    background: transparent;
+}
