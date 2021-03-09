@@ -1,3 +1,12 @@
+// DOM CONTENT
+document.addEventListener('DOMContentLoaded', (event) => {
+    createGridDivs()
+    createWalls()
+    const startDiv = document.querySelector('div#gi1-1')
+    startDiv.appendChild(testChar)
+    // spawnEnemies()
+    spawnTreasures()
+})
 // Create global variables
 
 const mapContainer = document.querySelector('div#map')
@@ -9,7 +18,8 @@ const battleButtons = document.querySelector('div#battle-buttons')
 const logBox = document.querySelector('div#log')
 const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
-const position = {x: 1, y: 1}
+const position = { x: 1, y: 1 }
+const url = "http://localhost:3000"
 let wallArray = {
     x: [10, 1, 2, 3, 4, 6, 7, 8, 10, 6, 7, 8, 10, 2, 3, 4, 6, 8, 10, 2, 3, 8, 10, 2, 3, 5, 6, 8, 10, 2, 6, 6, 8, 9, 1, 2, 3, 5, 6, 7, 8, 9],
     y: [1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9]
@@ -19,6 +29,14 @@ function getRandomNum(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function checkArea() {
+    const left = document.querySelector(`div#gi${position.x - 1}-${position.y}`)
+    const right = document.querySelector(`div#gi${position.x + 1}-${position.y}`)
+    const up = document.querySelector(`div#gi${position.x}-${position.y - 1}`)
+    const down = document.querySelector(`div#gi${position.x}-${position.y + 1}`)
+
+    return { left, right, up, down }
+}
 function createWalls() {
     for (let i = 0; i < wallArray.x.length; i++) {
         const wallDiv = document.querySelector(`div#gi${wallArray.x[i]}-${wallArray.y[i]}`)
@@ -27,21 +45,21 @@ function createWalls() {
 }
 
 function fetchEnemy(id) {
-    fetch(`http://localhost:3000/enemies/${id}`)
+    fetch(`${url}/enemies/${id}`)
         .then(res => res.json)
         .then(enemy => enemy)
 }
 
 function fetchPlayer() {
-    fetch(`http://localhost:3000/players/1`)
+    fetch(`${url}/players/1`)
         .then(res => res.json)
         .then(player => player)
 }
 
 function updatePlayer(player) {
-    fetch(`http://localhost:3000/players/1`, {
+    fetch(`${url}/players/1`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(player)
     })
         .then(res => res.json())
@@ -49,9 +67,9 @@ function updatePlayer(player) {
 }
 
 function updateEnemy(enemy) {
-    fetch(`http://localhost:3000/enemies/${enemy.id}`, {
+    fetch(`${url}/enemies/${enemy.id}`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(enemy)
     })
         .then(res => res.json())
@@ -100,7 +118,7 @@ function battleSpecial(id) {
     const atk = Math.ceil(1.5 * (player.multiplier * getRandomNum(2, 6)))
     enemy.hp -= atk
     const updatedEnemy = updateEnemy(enemy)
-    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy) 
+    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
 }
 
 function showItems() {
@@ -110,15 +128,6 @@ function showItems() {
 function useItem(itemId) {
 }
 
-// DOM CONTENT
-document.addEventListener('DOMContentLoaded', (event) => {
-    createGridDivs()
-    createWalls()
-    const startDiv = document.querySelector('div#gi1-1')
-    startDiv.appendChild(testChar)
-    spawnEnemies()
-    spawnTreasures()
-})
 
 const createGridDivs = () => {
 
@@ -140,115 +149,95 @@ const createGridDivs = () => {
 
 // Helper functions
 
-function checkWall(direction) {
-    switch (direction) {
-        case "left":
-            let checkLeft = document.querySelector(`div#gi${position.x - 1}-${position.y}`)
-            if (checkLeft) {
-                return checkLeft.classList.contains('wall') ? false : true
-            } else {
-                return false
-            }
-
-        case "right":
-            let checkRight = document.querySelector(`div#gi${position.x + 1}-${position.y}`)
-            if (checkRight) {
-                return checkRight.classList.contains('wall') ? false : true
-            } else {
-                return false
-            }
-
-        case "up":
-            let checkUp = document.querySelector(`div#gi${position.x}-${position.y - 1}`)
-            if (checkUp) {
-                return checkUp.classList.contains('wall') ? false : true
-            } else {
-                return false
-            }
-
-        case "down":
-            let checkDown = document.querySelector(`div#gi${position.x}-${position.y + 1}`)
-            if (checkDown) {
-                return checkDown.classList.contains('wall') ? false : true
-            } else {
-                return false
-            }
-    }
-}
-
-function checkGrid() {
-    const targetDiv = testChar.closest('div')
-    if (testChar.closest('div').classList.contains('treasure')) {
-        const id = parseInt(targetDiv.dataset.id)
-        pickupTreasure(id)
-    }
-    else if (testChar.closest('div').classList.contains('enemy')) {
-        const id = parseInt(targetDiv.dataset.id)
-        startBattle(id)
-    }
-}
-
 function moveLeft() {
-    if (checkWall('left')) {
-        position.x -= 1
-        const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
-        newDiv.appendChild(testChar)
-    }
-    checkGrid()
+    position.x -= 1
+    const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
+    newDiv.appendChild(testChar)
 }
 
 function moveRight() {
-    if (checkWall('right')) {
-        position.x += 1
-        const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
-        newDiv.appendChild(testChar)
-    }
-    checkGrid()
+    position.x += 1
+    const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
+    newDiv.appendChild(testChar)
 }
 
 function moveUp() {
-    if (checkWall('up')) {
         position.y -= 1
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
-    }
-    checkGrid()
 }
 
 function moveDown() {
-    if (checkWall('down')) {
         position.y += 1
         const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
         newDiv.appendChild(testChar)
-    }
-    checkGrid()
 }
 
 function moveCharacter(e) {
+    const left = checkArea().left
+    const right = checkArea().right
+    const up = checkArea().up
+    const down = checkArea().down
+
     switch (e.keyCode) {
         case 37: // Left
             testChar.className = "facing_left"
-            moveLeft()
+            if (left.classList.contains('enemy')) {
+                startBattle(parseInt(left.dataset.id))
+            } else if (left.classList.contains('wall')) {
+                return;
+            }
+            else if (left.classList.contains('treasure')) {
+                pickupTreasure(parseInt(left.dataset.id))
+                moveLeft()
+            }
+            else { moveLeft() }
             break;
 
         case 38: // Up
-            moveUp()
+            if (up.classList.contains('enemy')) {
+                startBattle(parseInt(up.dataset.id))
+            } else if (up.classList.contains('wall')) {
+                return;
+            }
+            else if (up.classList.contains('treasure')) {
+                pickupTreasure(parseInt(up.dataset.id))
+                moveUp()
+            }
+            else { moveUp() }
             break;
 
         case 39: // Right 
             testChar.className = "facing_right"
-            moveRight()
+            if (right.classList.contains('enemy')) {
+                startBattle(parseInt(right.dataset.id))
+            } else if (right.classList.contains('wall')) {
+                return;
+            }
+            else if (right.classList.contains('treasure')) {
+                pickupTreasure(parseInt(right.dataset.id))
+                moveRight()
+            }
+            else { moveRight() }
             break;
 
         case 40: // Down
-            moveDown()
+            if (down.classList.contains('enemy')) {
+                startBattle(parseInt(down.dataset.id))
+            } else if (down.classList.contains('wall')) {
+                return;
+            }
+            else if (down.classList.contains('treasure')) {
+                pickupTreasure(parseInt(down.dataset.id))
+                moveDown()
+            }
+            else { moveDown() }
             break;
 
         default:
             return;
     }
 }
-
 
 function spawnEnemies() {
     enemyObj =
@@ -277,7 +266,8 @@ function spawnTreasures() {
 }
 
 function pickupTreasure(id) {
-    fetch('http://localhost:3000/possessions/', {
+    console.log('HEY')
+    fetch(`${url}/possessions/`, {
         method: 'POST',
         headers: { 'Content-Type': "application/json" },
         body: JSON.stringify({ player_id: 1, item_id: id })
