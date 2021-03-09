@@ -6,7 +6,8 @@ const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
 let position = { x: 1, y: 1 }
-let wallArray = { x: [2, 2, 2, 3], y: [1, 2, 3, 3] }
+let wallArray = { x: [10, 1, 2, 3, 4, 6, 7, 8, 10, 6, 7, 8, 10, 2, 3, 4, 6, 8, 10, 2, 3, 8, 10, 2, 3, 5, 6, 8, 10, 2, 6, 6, 8, 9, 1, 2, 3, 5, 6, 7, 8, 9], 
+    y: [1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9] }
 
 const logBox = document.querySelector('div#log')
 const battleCommand = document.querySelector('div#battle-command')
@@ -172,39 +173,37 @@ function moveCharacter(e) {
 
 
 function spawnEnemies() {
-    for (let i = 0; i < 5; i++) {
-        // const enemy = document.createElement('img')
-        // enemy.className = "enemy"
-        // enemy.src = "assets/boss.png"
-        const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
-        if (!randomDiv.classList.contains('wall')) { 
-            randomDiv.classList.add('enemy')
-            randomDiv.dataset.id = "1"
-        }
+    enemyObj = 
+    {x: [5, 1, 3, 5, 7, 10, 9, 9],
+    y: [1, 5, 10, 4, 5, 7, 1, 5]}
+    for (let i = 0; i < enemyObj.x.length; i++) {
+        const spawnDiv = document.querySelector(`div#gi${enemyObj.x[i]}-${enemyObj.y[i]}`)
+        spawnDiv.classList.add('enemy')
     }
 }
 
 function spawnTreasures() {
-    for (let i = 0; i < 5; i++) {
-        // const treasure = document.createElement('img')
-        // treasure.className = "treasure"
-        // treasure.src = "assets/treasure.png"
-        const randomDiv = mapContainer.children[Math.floor(Math.random() * 100)]
-        if (!randomDiv.classList.contains('wall') && !randomDiv.classList.contains('enemy')) { 
-            randomDiv.classList.add('treasure')
-            randomDiv.dataset.id = "1"
-        }
+    itemObj = 
+    {x: [1, 7, 10, 9],
+    y: [10, 4, 8, 3]}
+    for (let i = 0; i < itemObj.x.length; i++) {
+        const spawnDiv = document.querySelector(`div#gi${itemObj.x[i]}-${itemObj.y[i]}`)
+        spawnDiv.classList.add('treasure')
     }
 }
 
 function pickupTreasure(id) {
-        fetch('localhost:3000/possessions/', {
+        fetch('http://localhost:3000/possessions/', {
         method: 'POST',
         headers: {'Content-Type': "application/json"},
         body: JSON.stringify({player_id: 1, item_id: id})
         })
         .then (res => res.json())
-        .then(possession => console.log(possession.item))
+        .then(possession => {
+            console.log(possession)
+            const targetDiv = testChar.closest('div')
+            targetDiv.classList.remove('treasure')
+        })
 
         logBox.textContent = "Pick up item.quantity item.name"
 
