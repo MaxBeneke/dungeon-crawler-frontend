@@ -9,6 +9,7 @@ const battleButtons = document.querySelector('div#battle-buttons')
 const logBox = document.querySelector('div#log')
 const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
+const position = {x: 1, y: 1}
 let wallArray = {
     x: [10, 1, 2, 3, 4, 6, 7, 8, 10, 6, 7, 8, 10, 2, 3, 4, 6, 8, 10, 2, 3, 8, 10, 2, 3, 5, 6, 8, 10, 2, 6, 6, 8, 9, 1, 2, 3, 5, 6, 7, 8, 9],
     y: [1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9]
@@ -64,6 +65,7 @@ function startBattle(id) {
     battleContainer.style.display == "none" ? battleContainer.style.display = "inline-block" : battleContainer.style.display = "none"
     battleCommand.style.display == "none" ? battleCommand.style.display = "inline-block" : battleCommand.style.display = "none"
     worldCommand.style.display == "inline-block" ? worldCommand.style.display = "none" : worldCommand.style.display = "inline-block"
+}
 
 battleButtons.addEventListener('click', e => {
     const enemyId = testChar.closest('div').dataset.id
