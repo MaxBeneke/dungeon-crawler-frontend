@@ -1,5 +1,4 @@
 // Create global variables
-
 const mapContainer = document.querySelector('div#map')
 const battleContainer = document.querySelector('div#battle')
 const characterContainer = document.querySelector('div#character-container')
@@ -11,6 +10,22 @@ const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = {x: 1, y: 1}
 
+
+// BGM constant
+const bgm = document.querySelector('audio#bgm')
+
+
+// Player info pane constants
+const playerStat = document.querySelector('div#player-stat')
+const playerPortrait = document.querySelector('img#portrait')
+const playerName = document.querySelector('section#name')
+const playerLevel = document.querySelector('section#level')
+const playerHP = document.querySelector('section#hp')
+const playerExp = document.querySelector('section#xp')
+const playerAttackNames = document.querySelector('section#attack-names')
+
+
+// Wall 
 let wallArray = {
     x: [10, 1, 2, 3, 4, 6, 7, 8, 10, 6, 7, 8, 10, 2, 3, 4, 6, 8, 10, 2, 3, 8, 10, 2, 3, 5, 6, 8, 10, 2, 6, 6, 8, 9, 1, 2, 3, 5, 6, 7, 8, 9],
     y: [1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9]
@@ -29,14 +44,14 @@ function createWalls() {
 
 function fetchEnemy(id) {
     fetch(`http://localhost:3000/enemies/${id}`)
-        .then(res => res.json)
+        .then(res => res.json())
         .then(enemy => enemy)
 }
 
 function fetchPlayer() {
     fetch(`http://localhost:3000/players/1`)
-        .then(res => res.json)
-        .then(player => player)
+        .then(res => res.json())
+        .then(player => renderPlayer(player))
 }
 
 function updatePlayer(player) {
@@ -302,3 +317,42 @@ function pickupTreasure(id) {
 
 
 document.addEventListener('keydown', moveCharacter)
+
+
+/////////////////////////////////////////////////////////////////////
+// Battle BGM 
+
+function playBGM() {
+    bgm.classList.contains('active') ? bgm.play() : null
+}
+
+function stopBGM() {
+    bgm.classList.contains('active') ? bgm.pause() : null
+}
+
+////////////////////////////////////////////////////////////////////
+// Show player stat on the right pane
+
+
+// const playerStat = document.querySelector('div#player-stat')
+// const playerPortrait = document.querySelector('img#portrait')
+// const playerName = document.querySelector('section#name')
+// const playerLevel = document.querySelector('section#level')
+// const playerHP = document.querySelector('section#hp')
+// const playerExp = document.querySelector('section#xp')
+// const playerAttackNames = document.querySelector('section#attack-names')
+
+function renderPlayer(player) {
+    playerStat.className = "active"
+    playerPortrait.setAttribute('src', `${player.sprite}`)
+
+    playerName.textContent = player.name
+    playerLevel.textContent = `Lvl ${player.level}` 
+    playerHP.textContent = `HP ${player.hp}`
+    playerExp.textContent = `EXP Points ${player.xp}` 
+
+    playerAttackNames.textContent = "Thunder Bolt Technique"
+}
+
+
+console.log(fetchPlayer())
