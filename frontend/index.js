@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
     startDiv.appendChild(testChar)
-    // spawnEnemies()
+    spawnEnemies()
     spawnTreasures()
 })
 // Create global variables
@@ -26,7 +26,15 @@ let wallArray = {
 }
 
 function getRandomNum(min, max) {
-    return Math.random() * (max - min) + min;
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+function rollCrit() {
+   const crit = getRandomNum(1, 13) == 12 ? true : false
+   if (crit) {
+       logText("It's a critical hit!")
+   }
+   return crit
 }
 
 function checkArea() {
@@ -44,16 +52,25 @@ function createWalls() {
     }
 }
 
-function fetchEnemy(id) {
-    fetch(`${url}/enemies/${id}`)
-        .then(res => res.json)
-        .then(enemy => enemy)
+
+function renderPlayer() {
+    return fetch(`${url}/players/1`).then(res => res.json())
+}
+
+function renderEnemy(id) {
+    return fetch(`${url}/enemies/${id}`).then(res => res.json())
 }
 
 function fetchPlayer() {
-    fetch(`${url}/players/1`)
-        .then(res => res.json)
-        .then(player => player)
+    const player = {}
+    renderPlayer().then(playerObj => {Object.assign(player, playerObj)})
+    return player
+}
+
+function fetchEnemy(id) {
+    const enemy = {}
+    renderEnemy(id).then(enemyObj => {Object.assign(enemy, enemyObj)})
+    return enemy
 }
 
 function updatePlayer(player) {
@@ -76,17 +93,35 @@ function updateEnemy(enemy) {
         .then(updatedEnemy => updatedEnemy)
 }
 
-document.addEventListener('click', () => { startBattle() })
+function findEnemyId() {
+    const area = checkArea()
+    if (area.left.classList.contains('enemy')) {return parseInt(area.left.dataset.id)}
+    else if (area.right.classList.contains('enemy')) {return parseInt(area.right.dataset.id)}
+    else if (area.up.classList.contains('enemy')) {return parseInt(area.up.dataset.id)}
+    else if (area.down.classList.contains('enemy')) {return parseInt(area.down.dataset.id)}
+}
+
+// document.addEventListener('click', () => endBattle())
 // startBattle should take 2 args. Player and Enemy
-function startBattle(id) {
-    mapContainer.style.display == "grid" ? mapContainer.style.display = "none" : mapContainer.style.display = "grid"
-    battleContainer.style.display == "none" ? battleContainer.style.display = "inline-block" : battleContainer.style.display = "none"
-    battleCommand.style.display == "none" ? battleCommand.style.display = "inline-block" : battleCommand.style.display = "none"
-    worldCommand.style.display == "inline-block" ? worldCommand.style.display = "none" : worldCommand.style.display = "inline-block"
+function startBattle(enemyId) {
+    mapContainer.style.display = "none"
+    battleContainer.style.display = "inline-block"
+    battleCommand.style.display = "inline-block"
+    worldCommand.style.display = "none"
+}
+
+function endBattle(enemyId) {
+    mapContainer.style.display = "grid"
+    battleContainer.style.display = "none"
+    battleCommand.style.display = "none"
+    worldCommand.style.display = "inline-block"
+    
+    const enemyDiv = document.querySelector(`div.enemy[data-id="${1}"]`)
+    enemyDiv.classList.remove('enemy')
 }
 
 battleButtons.addEventListener('click', e => {
-    const enemyId = testChar.closest('div').dataset.id
+    const enemyId = findEnemyId()
     switch (e.target.id) {
         case "attack":
             battleAttack(enemyId)
@@ -102,23 +137,32 @@ battleButtons.addEventListener('click', e => {
             break;
     }
 })
-
+/// FETCHING ENEMY DOES NOT WORK
 function battleAttack(id) {
     const player = fetchPlayer()
     const enemy = fetchEnemy(id)
-    const atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
-    enemy.hp -= atk
-    const updatedEnemy = updateEnemy(enemy)
-    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
+    console.log(player.hp)
+    // const crit = rollCrit() ? 2 : 1
+    // const atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
+    // // atk *= crit
+    // enemy.hp -= atk
+    // const updatedEnemy = updateEnemy(enemy)
+    // console.log(updatedEnemy)
+    // updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
 }
 
 function battleSpecial(id) {
     const player = fetchPlayer()
     const enemy = fetchEnemy(id)
-    const atk = Math.ceil(1.5 * (player.multiplier * getRandomNum(2, 6)))
-    enemy.hp -= atk
-    const updatedEnemy = updateEnemy(enemy)
-    updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
+    if (player.special > 0) {
+        const atk = Math.ceil(1.5 * (player.multiplier * getRandomNum(2, 6)))
+        enemy.hp -= atk
+        player.special -= 1
+        const updatedEnemy = updateEnemy(enemy)
+        updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
+    } else {
+        noSpecialNotif()
+    }
 }
 
 function showItems() {
@@ -128,11 +172,12 @@ function showItems() {
 function useItem(itemId) {
 }
 
+function noSpecialNotif() {
+    logText("You're out of Special Moves!")
+}
 
 const createGridDivs = () => {
-
     for (let x = 1; x < 11; x++) {
-
         for (let y = 1; y < 11; y++) {
             const div = document.createElement('div')
             div.className = 'grid-item'
@@ -162,15 +207,15 @@ function moveRight() {
 }
 
 function moveUp() {
-        position.y -= 1
-        const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
-        newDiv.appendChild(testChar)
+    position.y -= 1
+    const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
+    newDiv.appendChild(testChar)
 }
 
 function moveDown() {
-        position.y += 1
-        const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
-        newDiv.appendChild(testChar)
+    position.y += 1
+    const newDiv = document.querySelector(`div#gi${position.x}-${position.y}`)
+    newDiv.appendChild(testChar)
 }
 
 function moveCharacter(e) {
@@ -282,6 +327,11 @@ function pickupTreasure(id) {
         })
 
 
+}
+
+function logText(text) {
+    // Animation set up? Timeout?
+    logBox.textContent = text
 }
 
 
