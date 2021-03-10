@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
     startDiv.appendChild(testChar)
-    spawnEnemies()
+    // spawnEnemies()
     spawnTreasures()
 })
 // Create global variables
