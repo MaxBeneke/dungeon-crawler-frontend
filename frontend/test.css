@@ -141,3 +141,47 @@ div#info {
     border: 3px black solid;
     border-radius: 10px;
 }
+/* <div id="info">
+<div id="player-stat" class="active">
+    <img id="portrait"></img>
+    <div id="detail">
+        <section id="name"></section>
+        <section id="level"></section>
+        <section id="hp"></section>
+        <section id="xp"></section>
+    </div>
+    <section id="attack-names"></section>
+</div>
+</div> */
+
+div#player-stat {
+    display: flex;
+    flex-direction: row;
+}
+
+img#portrait {
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+}
+
+div#detail section {
+    font-size: 25px;
+    padding: 16px;
+    margin-top: 20px;
+}
+
+section#attack-names {
+    border: 2px solid black;
+    padding: 5px;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 25px;
+}
+
+.active {
+    display: none;
+}
+
