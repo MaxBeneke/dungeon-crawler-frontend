@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
     startDiv.appendChild(testChar)
-    // spawnEnemies()
+    spawnEnemies()
     spawnTreasures()
 })
 // Create global variables
@@ -19,7 +19,7 @@ const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
-const position = {x: 1, y: 1}
+
 
 
 // BGM constant
@@ -27,6 +27,7 @@ const bgm = document.querySelector('audio#bgm')
 
 
 // Player info pane constants
+const playerInfo = document.querySelector('div#character-info')
 const playerStat = document.querySelector('div#player-stat')
 const playerPortrait = document.querySelector('img#portrait')
 const playerName = document.querySelector('section#name')
@@ -34,6 +35,10 @@ const playerLevel = document.querySelector('section#level')
 const playerHP = document.querySelector('section#hp')
 const playerExp = document.querySelector('section#xp')
 const playerAttackNames = document.querySelector('section#attack-names')
+
+// Item info pane constants
+const itemInfo = document.querySelector('div#item-stat')
+
 
 
 // Wall 
@@ -138,7 +143,10 @@ battleButtons.addEventListener('click', e => {
             battleSpecial(enemyId)
             break;
         case "battle-item":
-            showItems()
+            // showItems()
+            itemInfo.className = ""
+            playerInfo.className = "hidden"
+            fetchItems()
             break;
         case "run":
             battleRun()
@@ -177,9 +185,10 @@ function battleSpecial(id) {
     })
 }
 
-function showItems() {
-    // Render the Item Div 
-}
+// Move to the bottom of the file for now
+// function showItems() {
+//     // Render the Item Div 
+// }
 
 function useItem(itemId) {
 
@@ -275,7 +284,7 @@ function moveCharacter(e) {
         case 38: // Up
             if (up.classList.contains('enemy')) {
                 startBattle(parseInt(up.dataset.id))
-            } else if (up.classList.contains('wall')) {
+            } else if (up.classLit.contains('wall')) {
                 return;
             }
             else if (up.classList.contains('treasure')) {
@@ -311,7 +320,7 @@ function moveCharacter(e) {
             }
             else { moveDown() }
             break;
-
+s
         default:
             return;
     }
@@ -368,10 +377,6 @@ function logText(text) {
 }
 
 
-
-
-
-
 document.addEventListener('keydown', moveCharacter)
 
 
@@ -389,15 +394,6 @@ function stopBGM() {
 ////////////////////////////////////////////////////////////////////
 // Show player stat on the right pane
 
-
-// const playerStat = document.querySelector('div#player-stat')
-// const playerPortrait = document.querySelector('img#portrait')
-// const playerName = document.querySelector('section#name')
-// const playerLevel = document.querySelector('section#level')
-// const playerHP = document.querySelector('section#hp')
-// const playerExp = document.querySelector('section#xp')
-// const playerAttackNames = document.querySelector('section#attack-names')
-
 function renderPlayer(player) {
     playerStat.className = "active"
     playerPortrait.setAttribute('src', `${player.sprite}`)
@@ -407,8 +403,42 @@ function renderPlayer(player) {
     playerHP.textContent = `HP ${player.hp}`
     playerExp.textContent = `EXP Points ${player.xp}` 
 
-    playerAttackNames.textContent = "Thunder Bolt Technique"
+    playerAttackNames.textContent = `${player.special || 0} -- Play Dead Technique `
 }
 
+fetchPlayer()
+.then(player => renderPlayer(player))
 
-console.log(fetchPlayer())
+///////////////////////////////////////////////////////////////
+// Get current items from player and show on the right pane
+
+function fetchItems() {
+    fetchPlayer().then(player => {
+        player.possessions.forEach(possession => {
+            const pTag = document.createElement('p')
+            pTag.textContent = possession.item.name
+            const divTag = document.createElement('div')
+            divTag.textContent = possession.item.description
+            itemInfo.append(pTag, divTag)
+        })
+    })
+}
+
+fetchItems()
+
+///////////////////////////////////////////////////////////////
+// Add eventlisterns for world map commands, toggle on click
+
+worldCommand.addEventListener('click', e => {
+    switch (e.target.id) {
+        case "stat": 
+            playerInfo.className = ""
+            itemInfo.className = "hidden"
+            break;
+        case "item":
+            itemInfo.className = ""
+            playerInfo.className = "hidden"
+            break;
+    }
+})
+
