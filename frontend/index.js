@@ -30,11 +30,11 @@ function getRandomNum(min, max) {
 }
 
 function rollCrit() {
-   const crit = getRandomNum(1, 13) == 12 ? true : false
-   if (crit) {
-       logText("It's a critical hit!")
-   }
-   return crit
+    const crit = getRandomNum(1, 13) == 12 ? true : false
+    if (crit) {
+        logText("It's a critical hit!")
+    }
+    return crit
 }
 
 function checkArea() {
@@ -53,52 +53,43 @@ function createWalls() {
 }
 
 
-function renderPlayer() {
+function fetchPlayer() {
     return fetch(`${url}/players/1`).then(res => res.json())
 }
 
-function renderEnemy(id) {
-    return fetch(`${url}/enemies/${id}`).then(res => res.json())
-}
-
-function fetchPlayer() {
-    const player = {}
-    renderPlayer().then(playerObj => {Object.assign(player, playerObj)})
-    return player
-}
-
 function fetchEnemy(id) {
-    const enemy = {}
-    renderEnemy(id).then(enemyObj => {Object.assign(enemy, enemyObj)})
-    return enemy
+    return fetch(`${url}/enemies/${id}`).then(res => res.json())
 }
 
 function updatePlayer(player) {
     fetch(`${url}/players/1`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(player)
     })
         .then(res => res.json())
-        .then(updatedPlayer => updatedPlayer)
+        .then(updatedPlayer => {
+            updatedPlayer.hp <= 0 ? gameOver() : logText('Ouch! That Hurt')
+        })
 }
 
 function updateEnemy(enemy) {
     fetch(`${url}/enemies/${enemy.id}`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(enemy)
     })
         .then(res => res.json())
-        .then(updatedEnemy => updatedEnemy)
+        .then(updatedEnemy => {
+            updatedEnemy.hp <= 0 ? battleWin(updatedEnemy.id) : enemyAttack(updatedEnemy.id)
+        })
 }
-
 function findEnemyId() {
     const area = checkArea()
-    if (area.left.classList.contains('enemy')) {return parseInt(area.left.dataset.id)}
-    else if (area.right.classList.contains('enemy')) {return parseInt(area.right.dataset.id)}
-    else if (area.up.classList.contains('enemy')) {return parseInt(area.up.dataset.id)}
-    else if (area.down.classList.contains('enemy')) {return parseInt(area.down.dataset.id)}
+    if (area.left.classList.contains('enemy')) { return parseInt(area.left.dataset.id) }
+    else if (area.right.classList.contains('enemy')) { return parseInt(area.right.dataset.id) }
+    else if (area.up.classList.contains('enemy')) { return parseInt(area.up.dataset.id) }
+    else if (area.down.classList.contains('enemy')) { return parseInt(area.down.dataset.id) }
 }
 
 // document.addEventListener('click', () => endBattle())
@@ -115,7 +106,7 @@ function endBattle(enemyId) {
     battleContainer.style.display = "none"
     battleCommand.style.display = "none"
     worldCommand.style.display = "inline-block"
-    
+
     const enemyDiv = document.querySelector(`div.enemy[data-id="${1}"]`)
     enemyDiv.classList.remove('enemy')
 }
@@ -137,32 +128,36 @@ battleButtons.addEventListener('click', e => {
             break;
     }
 })
-/// FETCHING ENEMY DOES NOT WORK
+
 function battleAttack(id) {
-    const player = fetchPlayer()
-    const enemy = fetchEnemy(id)
-    console.log(player.hp)
-    // const crit = rollCrit() ? 2 : 1
-    // const atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
-    // // atk *= crit
-    // enemy.hp -= atk
-    // const updatedEnemy = updateEnemy(enemy)
-    // console.log(updatedEnemy)
-    // updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
+    fetchPlayer().then(player => {
+        const crit = rollCrit() ? 2 : 1
+        let atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
+        atk = atk * crit
+        fetchEnemy(id).then(enemy => {
+            enemy.hp -= atk
+            console.log(enemy)
+            updateEnemy(enemy)
+        })
+    })
 }
 
 function battleSpecial(id) {
-    const player = fetchPlayer()
-    const enemy = fetchEnemy(id)
-    if (player.special > 0) {
-        const atk = Math.ceil(1.5 * (player.multiplier * getRandomNum(2, 6)))
-        enemy.hp -= atk
-        player.special -= 1
-        const updatedEnemy = updateEnemy(enemy)
-        updatedEnemy.hp <= 0 ? battleWin(updatedEnemy) : enemyAttack(updatedEnemy)
-    } else {
-        noSpecialNotif()
-    }
+    fetchPlayer().then(player => {
+        const crit = rollCrit() ? 2 : 1
+        let spAtk = Math.floor(1.5 * (Math.ceil(player.multiplier * getRandomNum(2, 6))))
+        spAtk = spAtk * crit
+
+        if (player.special > 0) {
+            fetchEnemy(id).then(enemy => {
+                enemy.hp -= spAtk
+                console.log(enemy)
+                updateEnemy(enemy)
+            })
+        } else {
+            noSpecialNotif()
+        }
+    })
 }
 
 function showItems() {
@@ -172,6 +167,26 @@ function showItems() {
 function useItem(itemId) {
 }
 
+function enemyAttack(id) {
+    let atk;
+    fetchEnemy(id).then(enemy => {
+        switch (enemy.xp) {
+            case 25:
+                atk = Math.ceil(getRandomNum(3, 7))
+                break;
+            case 50:
+                atk = Math.ceil(getRandomNum(5, 10))
+                break;
+            case 75:
+                atk = Math.ceil(getRandomNum(8, 12))
+        }
+        fetchPlayer().then(player => {
+            player.hp -= atk
+            console.log(player)
+            updatePlayer(player)
+        })    
+    })
+}
 function noSpecialNotif() {
     logText("You're out of Special Moves!")
 }
