@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
     startDiv.appendChild(testChar)
-    // spawnEnemies()
+    spawnEnemies()
     spawnTreasures()
 })
 // Create global variables
@@ -19,7 +19,7 @@ const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
-const position = {x: 1, y: 1}
+
 
 
 // BGM constant
@@ -69,7 +69,6 @@ function createWalls() {
     }
 }
 
-
 function fetchPlayer() {
     return fetch(`${url}/players/1`).then(res => res.json())
 }
@@ -79,15 +78,33 @@ function fetchEnemy(id) {
 }
 
 function updatePlayer(player) {
-    fetch(`${url}/players/1`, {
+    fetch(`${url}/players/${player.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         body: JSON.stringify(player)
     })
         .then(res => res.json())
         .then(updatedPlayer => {
-            updatedPlayer.hp <= 0 ? gameOver() : logText('Ouch! That Hurt')
+            checkPlayerStatus(updatedPlayer)
         })
+}
+
+function checkPlayerStatus(player) {
+    if (player.hp <= 0) {
+        gameOver()
+    }
+    else if (player.xp >= 100) {
+        levelUp(player)
+    }
+    else if (mapContainer.style.display == "none") {
+        logText("The Battle Continues")
+    }
+    else {
+        return
+    }
 }
 
 function updateEnemy(enemy) {
@@ -101,12 +118,23 @@ function updateEnemy(enemy) {
             updatedEnemy.hp <= 0 ? battleWin(updatedEnemy.id) : enemyAttack(updatedEnemy.id)
         })
 }
+
+function battleWin(enemyId) {
+    let exp;
+    fetchEnemy(enemyId).then(enemy => exp = enemy.xp)
+    fetchPlayer().then(player => {
+        player.xp += exp
+        updatePlayer(player)
+        endBattle(findEnemyId())
+    })
+}
+
 function findEnemyId() {
     const area = checkArea()
-    if (area.left.classList.contains('enemy')) { return parseInt(area.left.dataset.id) }
-    else if (area.right.classList.contains('enemy')) { return parseInt(area.right.dataset.id) }
-    else if (area.up.classList.contains('enemy')) { return parseInt(area.up.dataset.id) }
-    else if (area.down.classList.contains('enemy')) { return parseInt(area.down.dataset.id) }
+    if (area.up && area.up.classList.contains('enemy')) { return parseInt(area.up.dataset.id) }
+    else if (area.right && area.right.classList.contains('enemy')) { return parseInt(area.right.dataset.id) }
+    else if (area.left && area.left.classList.contains('enemy')) { return parseInt(area.left.dataset.id) }
+    else if (area.down && area.down.classList.contains('enemy')) { return parseInt(area.down.dataset.id) }
 }
 
 // document.addEventListener('click', () => endBattle())
@@ -124,7 +152,7 @@ function endBattle(enemyId) {
     battleCommand.style.display = "none"
     worldCommand.style.display = "inline-block"
 
-    const enemyDiv = document.querySelector(`div.enemy[data-id="${1}"]`)
+    const enemyDiv = document.querySelector(`div.enemy[data-id="${findEnemyId()}"]`)
     enemyDiv.classList.remove('enemy')
 }
 
@@ -162,13 +190,16 @@ function battleAttack(id) {
 function battleSpecial(id) {
     fetchPlayer().then(player => {
         const crit = rollCrit() ? 2 : 1
-        let spAtk = Math.floor(1.5 * (Math.ceil(player.multiplier * getRandomNum(2, 6))))
+        let spAtk = Math.ceil(1.5 * (Math.ceil(player.multiplier * getRandomNum(2, 6))))
         spAtk = spAtk * crit
+        console.log(spAtk)
 
         if (player.special > 0) {
             fetchEnemy(id).then(enemy => {
                 enemy.hp -= spAtk
+                player.special -= 1
                 console.log(enemy)
+                updatePlayer(player)
                 updateEnemy(enemy)
             })
         } else {
@@ -196,17 +227,44 @@ function enemyAttack(id) {
                 atk = Math.ceil(getRandomNum(5, 10))
                 break;
             case 75:
-                atk = Math.ceil(getRandomNum(8, 12))
+                atk = Math.ceil(getRandomNum(7, 12))
         }
         fetchPlayer().then(player => {
             player.hp -= atk
             console.log(player)
             updatePlayer(player)
-        })    
+        })
     })
 }
 function noSpecialNotif() {
     logText("You're out of Special Moves!")
+}
+
+function levelUp(player) {
+    player.xp -= 100
+    player.level += 1
+    let newHp
+    switch (player.level) {
+        case 2:
+            newHp = 55
+            break;
+        case 3:
+            newHp = 60
+            break;
+        case 4:
+            newHp = 65
+            break;
+        case 5:
+            newHp = 70
+    }
+    player.hp = newHp
+    player.special = 4
+    console.log(player)
+    updatePlayer(player)
+}
+
+function gameOver() {
+    console.log("OH SHOOT IT'S GAME OVER FOR YOU!")
 }
 
 const createGridDivs = () => {
@@ -344,7 +402,6 @@ function spawnTreasures() {
 }
 
 function pickupTreasure(id) {
-    console.log('HEY')
     fetch(`${url}/possessions/`, {
         method: 'POST',
         headers: { 'Content-Type': "application/json" },
@@ -399,16 +456,21 @@ function stopBGM() {
 // const playerAttackNames = document.querySelector('section#attack-names')
 
 function renderPlayer(player) {
+    console.log(player)
     playerStat.className = "active"
     playerPortrait.setAttribute('src', `${player.sprite}`)
 
     playerName.textContent = player.name
-    playerLevel.textContent = `Lvl ${player.level}` 
+    playerLevel.textContent = `Lvl ${player.level}`
     playerHP.textContent = `HP ${player.hp}`
-    playerExp.textContent = `EXP Points ${player.xp}` 
+    playerExp.textContent = `EXP Points ${player.xp}`
 
     playerAttackNames.textContent = "Thunder Bolt Technique"
 }
 
+fetchPlayer()
+    .then(player => {
+        console.log(player)
+        renderPlayer(player)
+    })
 
-console.log(fetchPlayer())
