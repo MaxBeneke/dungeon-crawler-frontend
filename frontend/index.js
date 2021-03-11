@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
     spawnEnemies()
     spawnTreasures()
 })
+
+
 // Create global variables
 const mapContainer = document.querySelector('div#map')
 const battleContainer = document.querySelector('div#battle')
@@ -21,6 +23,7 @@ const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
 const attackQuotes = ["A direct hit!", "Take that, loser.", "*Smack* Right in the kisser!", "Ouch! That's gotta hurt!"]
+const mainPane = document.querySelector('main#main-game')
 
 
 
@@ -29,6 +32,7 @@ const bgm = document.querySelector('audio#bgm')
 
 
 // Player info pane constants
+const infoDiv = document.querySelector('div#info')
 const playerInfo = document.querySelector('div#character-info')
 const playerStat = document.querySelector('div#player-stat')
 const playerPortrait = document.querySelector('img#portrait')
@@ -38,16 +42,16 @@ const playerHP = document.querySelector('section#hp')
 const playerExp = document.querySelector('section#xp')
 const playerAttackNames = document.querySelector('section#attack-names')
 
+
 // Item info pane constants
 const itemInfo = document.querySelector('div#item-stat')
 const pTagItems = itemInfo.querySelectorAll('p')
+
 
 // Audio option constant
 const audioOption = document.querySelector('div#audio-option')
 const audionOnBtn = document.querySelector('button#radio-on')
 const audionOffBtn = document.querySelector('button#radio-off')
-
-
 
 
 
@@ -74,6 +78,7 @@ function checkArea() {
 
     return { left, right, up, down }
 }
+
 function createWalls() {
     for (let i = 0; i < wallArray.x.length; i++) {
         const wallDiv = document.querySelector(`div#gi${wallArray.x[i]}-${wallArray.y[i]}`)
@@ -305,7 +310,16 @@ function levelUp(player) {
 }
 
 function gameOver() {
-    console.log("OH SHOOT IT'S GAME OVER FOR YOU!")
+    const gameOverImage = document.createElement('img')
+    gameOverImage.src = "assets/gameover.jpeg"
+    gameOverImage.className = "gameover"
+
+    const gameOverMsg = document.createElement('p')
+    gameOverMsg.textContent = "OH SHOOT IT'S GAME OVER FOR YOU!"
+    gameOverMsg.className = "gameover"
+
+    mainPane.innerHTML = " "
+    mainPane.append(gameOverMsg, gameOverImage)
 }
 
 const createGridDivs = () => {
@@ -617,3 +631,25 @@ itemInfo.addEventListener('click', e => {
 
 
 
+///////////////////////////////////////////////////////////////
+// Check if the game is won
+
+function gameWon() {
+    if (testChar.closest('div').id === `gi10-10`) {
+
+        const gameWonImage = document.createElement('img')
+        gameWonImage.src = "assets/gamewon.jpeg"
+        gameWonImage.className = "gamewon"
+
+        const gameWonMsg = document.createElement('p')
+        gameWonMsg.textContent = "You have escaped middle school!"
+        gameWonMsg.className = "gamewon"
+
+        mainPane.innerHTML = " "
+        mainPane.append(gameWonMsg, gameWonImage)
+    }
+
+    window.requestAnimationFrame(gameWon)
+}
+
+window.requestAnimationFrame(gameWon)
