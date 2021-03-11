@@ -24,6 +24,7 @@ const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
 const attackQuotes = ["A direct hit!", "Take that, loser.", "*Smack* Right in the kisser!", "Ouch! That's gotta hurt!"]
 const mainPane = document.querySelector('main#main-game')
+const gameScreen = document.querySelector('div#game-screen')
 
 
 
@@ -181,13 +182,13 @@ battleButtons.addEventListener('click', e => {
             battleSpecial(enemyId)
             break;
         case "battle-item":
-            // showItems()
             itemInfo.className = ""
             playerInfo.className = "hidden"
             fetchItems()
             break;
-        case "run":
-            battleRun()
+        case "status":
+            itemInfo.className = "hidden"
+            playerInfo.className = ""
             break;
     }
 })
@@ -319,7 +320,8 @@ function gameOver() {
     gameOverMsg.className = "gameover"
 
     mainPane.innerHTML = " "
-    mainPane.append(gameOverMsg, gameOverImage)
+    logBox.remove()
+    gameScreen.append(gameOverMsg, gameOverImage)
 }
 
 const createGridDivs = () => {
@@ -617,6 +619,8 @@ function enableEventListeners(array) {
     array.forEach(element => element.style.pointerEvents = "all")
     console.log('enabled')
 }
+
+
 ///////////////////////////////////////////////////////////////
 // Add eventlisterns for background bgm, click on and off
 
@@ -633,10 +637,8 @@ itemInfo.addEventListener('click', e => {
 
 ///////////////////////////////////////////////////////////////
 // Check if the game is won
-
 function gameWon() {
     if (testChar.closest('div').id === `gi10-10`) {
-
         const gameWonImage = document.createElement('img')
         gameWonImage.src = "assets/gamewon.jpeg"
         gameWonImage.className = "gamewon"
@@ -646,10 +648,12 @@ function gameWon() {
         gameWonMsg.className = "gamewon"
 
         mainPane.innerHTML = " "
-        mainPane.append(gameWonMsg, gameWonImage)
+        logBox.remove()
+        gameScreen.append(gameWonMsg, gameWonImage)     
     }
-
-    window.requestAnimationFrame(gameWon)
+    else {
+        window.requestAnimationFrame(gameWon)
+    }
 }
 
 window.requestAnimationFrame(gameWon)

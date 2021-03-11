@@ -11,74 +11,82 @@
 <body>
     <main id="main-game">
 
-    <div id="battle-command" class="battle-start">
-        <div id="battle-buttons">
-            <div><button id="attack">Attack</button></div>
-            <div><button id="special">Special</button></div>
-            <div><button id="battle-item">Item</button></div>
-            <div><button id="run">Run</button></div>
-        </div>
-    </div>
-
-
-    <div id="battle" class="battle-start"> 
-        <img src="assets/boss.png" alt="boss">
-    </div>
-
-
-    <div id="command" class="map-start">
-        <div id="world-buttons">
-            <div><button id="stat">Status</button></div>
-            <div><button id="item">Item</button></div>
-            <div><button id="option">Option</button></div>
-        </div>
-    </div>
-
-
-    <div id="map" class="map-start">            
-    </div>
-
-
-    <div id="sprite-div">
-        <img src="assets/test_sprite.png" alt="character" id="test-sprite"> 
-    </div>
-
-    <div id="info">
-
-        <div id="character-info" class="">
-            <div id="player-stat">
-                <img id="portrait"></img>
-                <div id="detail">
-                    <section id="name"></section>
-                    <section id="level"></section>
-                    <section id="hp"></section>
-                    <section id="xp"></section>
-                </div>          
-            </div>
-            <section id="attack-names"></section>
-        </div>
-
-        <div id="item-stat" class="hidden">
-        </div>
-
-        <div id="audio-option" class="hidden">
-            <div class="radio-input">
-                <button id ="radio-on">Turn BGM on</button>
-                <button id ="radio-off">Turn BGM off</button>
+        <div id="battle-command" class="battle-start">
+            <div id="battle-buttons">
+                <div><button id="attack">Attack</button></div>
+                <div><button id="special">Special</button></div>
+                <div><button id="battle-item">Item</button></div>
+                <div><button id="status">Status</button></div>
             </div>
         </div>
 
-    </div>
+
+        <div id="battle" class="battle-start"> 
+            <div id="battle-map-container">
+                <img src="assets/boss.png" alt="boss">
+                <h2>Some text showing enemy name</h2>
+            </div>
+        </div>
+
+
+        <div id="command" class="map-start">
+            <div id="world-buttons">
+                <div><button id="stat">Status</button></div>
+                <div><button id="item">Item</button></div>
+                <div><button id="option">Option</button></div>
+            </div>
+        </div>
+
+
+        <div id="map" class="map-start">            
+        </div>
+
+
+        <div id="sprite-div">
+            <img src="assets/test_sprite.png" alt="character" id="test-sprite"> 
+        </div>
+
+        <div id="info">
+
+            <div id="character-info" class="">
+                <div id="player-stat">
+                    <img id="portrait"></img>
+                    <div id="detail">
+                        <section id="name"></section>
+                        <section id="level"></section>
+                        <section id="hp"></section>
+                        <section id="xp"></section>
+                    </div>          
+                </div>
+                <section id="attack-names"></section>
+            </div>
+
+            <div id="item-stat" class="hidden">
+            </div>
+
+            <div id="audio-option" class="hidden">
+                <div class="radio-input">
+                    <button id ="radio-on">Turn BGM on</button>
+                    <button id ="radio-off">Turn BGM off</button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
 
     <div id="log">
         This is the log box. This is the log box. This is the log box.
     </div>
-        
+            
 
     <div id="audio">
         <audio id ="bgm" class="" src="assets/requiem.mp3"></audio>
     </div>
 
-    </main>
+    <div id="game-screen">
+    </div>
+
+
 </body>
 </html>

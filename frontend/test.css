@@ -2,30 +2,38 @@
     font-size: 18px;;
 }
 
+main#main-game {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+}
 /* Show world map and world command at default, hide on click */
 #map.map-start {
     border: 5px solid black;
-    margin-left: 400px;
-    margin-right: 400px;
-
     display: grid;
     grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
     grid-template-rows: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
     width: 640px;
     height: 600px;
+    margin-left: 100px;
+    margin-top: 50px;
 }
 
 #command.map-start {
     display: inline-block;
-    height: 100px;
+    height: 400px;
     width: 100px;
+    margin-left: 50px;
 }
 
 
 /* Hide battle map and battle command at default, display on click */
 #battle.battle-start {
     display: none;
-    margin-top: 100px;
+    margin-left: 100px;
+    margin-top: 50px;
     height: 600px;
     width: 640px;
     border: 5px solid black;
@@ -35,7 +43,7 @@
     display: none;
     height: 400px;
     width: 100px;
-    margin-right: 300px;
+    margin-left: 50px;
 }
 
 /* Styling for the assets */
@@ -95,12 +103,11 @@ div#battle img {
 /* Styling for the log box */
 
 div#log {
-    position: fixed;
-    bottom: 20px;
-    left: 430px;
-
     height: 40px;
     width: 600px;
+    margin-top: 20px;
+    margin-bottom: auto;
+    margin-left: 380px;
     text-align: center;
     border-radius: 5px;
     border: 3px solid black;
@@ -109,15 +116,11 @@ div#log {
 /* Styling for the buttons */
 
 div#world-buttons {
-    position: fixed;
-    top: 280px;
-    left: 180px;
+    margin-right: 100px;
 }
 
 div#battle-buttons {
-    position: fixed;
-    top: 280px;
-    left: 180px;
+    margin-right: 100px;
 }
 
 div#battle-command div#battle-buttons button, div#command div#world-buttons button {
@@ -137,14 +140,12 @@ div#battle-command div#battle-buttons button, div#command div#world-buttons butt
 }
 
 div#info {
-    position: fixed;
-    top: 100px;
-    right: 100px;
     height: 635px;
     width: 350px;
     border: 3px black solid;
     border-radius: 10px;
     overflow: hidden;
+    margin-top: 50px;
 }
 
 
@@ -221,10 +222,6 @@ div.radio-input button {
     margin: 15px;
 }
 
-/* Styling for the exit */
-div.exit {
-    background-color: orange;
-}
 
 
 img.gameover, img.gamewon {
@@ -235,8 +232,21 @@ img.gameover, img.gamewon {
 }
 
 p.gameover, p.gamewon {
-    font-size: 20px;
+    font-size: 30px;
     text-align: center;
-    margin-top: 80px;
+    margin: 80px;
+    display: block;
+}
+
+div#battle-map-container {
+    position: relative;
+}
+
+div#battle-map-container h2 {
+    position: absolute;
+    top: 0px;
+    left: 180px;
+    font-weight: bold;
+    font-size: 20px;
 }
 
