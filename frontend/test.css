@@ -7,8 +7,8 @@ main#main-game {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-
 }
+
 /* Show world map and world command at default, hide on click */
 #map.map-start {
     border: 5px solid black;
@@ -27,7 +27,6 @@ main#main-game {
     width: 100px;
     margin-left: 50px;
 }
-
 
 /* Hide battle map and battle command at default, display on click */
 #battle.battle-start {
@@ -98,7 +97,6 @@ div#battle img {
     background: url('assets/treasure.png');
     image-rendering: pixelated;
 }
-
 
 /* Styling for the log box */
 
@@ -222,7 +220,7 @@ div.radio-input button {
     margin: 15px;
 }
 
-
+/* Styling for the images and texts for game over and game won screens */
 
 img.gameover, img.gamewon {
     display: block;
@@ -238,6 +236,8 @@ p.gameover, p.gamewon {
     display: block;
 }
 
+/* Position and styling for enemy name */
+
 div#battle-map-container {
     position: relative;
 }
@@ -245,8 +245,8 @@ div#battle-map-container {
 div#battle-map-container h2 {
     position: absolute;
     top: 0px;
-    left: 180px;
+    left: 20px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 25px;
 }
 

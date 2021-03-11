@@ -25,7 +25,7 @@ const url = "http://localhost:3000"
 const attackQuotes = ["A direct hit!", "Take that, loser.", "*Smack* Right in the kisser!", "Ouch! That's gotta hurt!"]
 const mainPane = document.querySelector('main#main-game')
 const gameScreen = document.querySelector('div#game-screen')
-
+const enemyNameHeader = document.querySelector('h2')
 
 
 // BGM constant
@@ -160,6 +160,9 @@ function startBattle(enemyId) {
     battleContainer.style.display = "inline-block"
     battleCommand.style.display = "inline-block"
     worldCommand.style.display = "none"
+
+    fetchEnemy(enemyId)
+    .then(enemy => enemyNameHeader.textContent = enemy.name)
 }
 
 function endBattle(enemyId) {
@@ -657,3 +660,4 @@ function gameWon() {
 }
 
 window.requestAnimationFrame(gameWon)
+
