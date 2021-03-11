@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createGridDivs()
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
-    const exitDiv = document.querySelector('div#gi10-10')
     startDiv.appendChild(testChar)
     spawnEnemies()
     spawnTreasures()
 })
+
+
 // Create global variables
 const mapContainer = document.querySelector('div#map')
 const battleContainer = document.querySelector('div#battle')
@@ -39,17 +40,15 @@ const playerHP = document.querySelector('section#hp')
 const playerExp = document.querySelector('section#xp')
 const playerAttackNames = document.querySelector('section#attack-names')
 
+
 // Item info pane constants
 const itemInfo = document.querySelector('div#item-stat')
+
 
 // Audio option constant
 const audioOption = document.querySelector('div#audio-option')
 const audionOnBtn = document.querySelector('button#radio-on')
 const audionOffBtn = document.querySelector('button#radio-off')
-
-
-
-
 
 
 
@@ -79,6 +78,7 @@ function checkArea() {
 
     return { left, right, up, down }
 }
+
 function createWalls() {
     for (let i = 0; i < wallArray.x.length; i++) {
         const wallDiv = document.querySelector(`div#gi${wallArray.x[i]}-${wallArray.y[i]}`)
@@ -285,8 +285,6 @@ function levelUp(player) {
 }
 
 function gameOver() {
-    console.log("OH SHOOT IT'S GAME OVER FOR YOU!")
-
     const gameOverImage = document.createElement('img')
     gameOverImage.src = "assets/gameover.jpeg"
     gameOverImage.className = "gameover"
@@ -296,7 +294,6 @@ function gameOver() {
     gameOverMsg.className = "gameover"
 
     mainPane.innerHTML = " "
-
     mainPane.append(gameOverMsg, gameOverImage)
 }
 
@@ -537,7 +534,25 @@ audionOnBtn.addEventListener('click', playBGM)
 audionOffBtn.addEventListener('click', stopBGM)
 
 
+///////////////////////////////////////////////////////////////
+// Check if the game is won
 
+function gameWon() {
+    if (testChar.closest('div').id === `gi10-10`) {
 
+        const gameWonImage = document.createElement('img')
+        gameWonImage.src = "assets/gamewon.jpeg"
+        gameWonImage.className = "gamewon"
 
+        const gameWonMsg = document.createElement('p')
+        gameWonMsg.textContent = "You have escaped middle school!"
+        gameWonMsg.className = "gamewon"
 
+        mainPane.innerHTML = " "
+        mainPane.append(gameWonMsg, gameWonImage)
+    }
+
+    window.requestAnimationFrame(gameWon)
+}
+
+window.requestAnimationFrame(gameWon)

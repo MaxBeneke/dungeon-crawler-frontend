@@ -218,15 +218,16 @@ div.exit {
 }
 
 
-img.gameover {
+img.gameover, img.gamewon {
     display: block;
     width: 500px;
     height: 500px;
-    margin: 100px auto;
+    margin: 80px auto;
 }
 
-p.gameover {
+p.gameover, p.gamewon {
     font-size: 20px;
     text-align: center;
-    margin-top: 100px;
+    margin-top: 80px;
 }
+
