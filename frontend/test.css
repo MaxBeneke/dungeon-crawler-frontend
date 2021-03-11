@@ -39,12 +39,13 @@
 }
 
 /* Styling for the assets */
-div.wall {
-    background: url('assets/wall.png')
+div.grid-item.wall {
+    background: url('assets/new-wall.png')
 }
 
 div.grid-item {
-    /* border: 2px solid purple */
+    border: 1.5px solid darkslategrey;
+    background: url('assets/floor-tile.png')
 }
 
 div#sprite-div {
@@ -72,7 +73,7 @@ img#test-sprite {
 }
 
 /* Styling for the enemies */
-.enemy {
+div.enemy {
     width: 64px;
     height: 64px;
     background: url('assets/boss.png');

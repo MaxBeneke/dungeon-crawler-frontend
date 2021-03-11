@@ -439,6 +439,7 @@ function spawnEnemies() {
         const spawnDiv = document.querySelector(`div#gi${enemyObj.x[i]}-${enemyObj.y[i]}`)
         spawnDiv.classList.add('enemy')
         spawnDiv.dataset.id = `${i + 1}`
+        // spawnDiv.style.backgroundImage = `url(/assets/enemy-${i + 1}.png)`
     }
 }
 
