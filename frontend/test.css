@@ -192,3 +192,26 @@ div#item-stat p, div#item-stat div{
 div#item-stat div:not(:last-child)  {
     border-bottom: 2px solid black
 }
+
+
+/* Styling for the audio pane */
+div#audio-option p {
+    font-size: 20px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+div.radio-input {
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+div.radio-input button {
+    padding: 10px;
+    margin: 15px;
+}
+
+
+

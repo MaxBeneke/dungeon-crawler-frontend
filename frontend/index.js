@@ -39,6 +39,13 @@ const playerAttackNames = document.querySelector('section#attack-names')
 // Item info pane constants
 const itemInfo = document.querySelector('div#item-stat')
 
+// Audio option constant
+const audioOption = document.querySelector('div#audio-option')
+const audionOnBtn = document.querySelector('button#radio-on')
+const audionOffBtn = document.querySelector('button#radio-off')
+
+
+
 
 
 // Wall 
@@ -441,11 +448,11 @@ document.addEventListener('keydown', moveCharacter)
 // Battle BGM 
 
 function playBGM() {
-    bgm.classList.contains('active') ? bgm.play() : null
+    bgm.play()
 }
 
 function stopBGM() {
-    bgm.classList.contains('active') ? bgm.pause() : null
+    bgm.pause()
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -492,11 +499,24 @@ worldCommand.addEventListener('click', e => {
         case "stat": 
             playerInfo.className = ""
             itemInfo.className = "hidden"
+            audioOption.className = "hidden"
             break;
         case "item":
             itemInfo.className = ""
             playerInfo.className = "hidden"
+            audioOption.className = "hidden"
             break;
+        case "option":
+            audioOption.className =""
+            itemInfo.className = "hidden"
+            playerInfo.className = "hidden"
     }
 })
+
+///////////////////////////////////////////////////////////////
+// Add eventlisterns for background bgm, click on and off
+
+audionOnBtn.addEventListener('click', playBGM)
+audionOffBtn.addEventListener('click', stopBGM)
+
 
