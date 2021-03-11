@@ -85,7 +85,7 @@ div#battle img {
 }
 
 /* Styling for the items */
-.treasure {
+div.treasure {
     width: 64px;
     height: 64px;
     background: url('assets/treasure.png');
