@@ -40,6 +40,7 @@ const playerAttackNames = document.querySelector('section#attack-names')
 
 // Item info pane constants
 const itemInfo = document.querySelector('div#item-stat')
+const pTagItems = itemInfo.querySelectorAll('p')
 
 // Audio option constant
 const audioOption = document.querySelector('div#audio-option')
@@ -253,6 +254,7 @@ function useItem(itemId, possesionId) {
 
 function enemyAttack(id) {
     let atk;
+    // let dialogue;
     fetchEnemy(id).then(enemy => {
         if (enemy.status == "smoke" && Math.floor(getRandomNum(1, 5)) == 2) {
             logText("The attack missed!")
@@ -454,8 +456,6 @@ function pickupTreasure(id) {
             logText(`You got a ${possession.item.name}! ${possession.item.description}`)
             fetchItems()
         })
-
-
 }
 
 function useMinorHealing() {
@@ -479,22 +479,19 @@ function useMajorHealing() {
 }
 
 function useBomb() {
-    if (mapContainer.style.display != "none") {
-        logText("You can't use this outside of battle!")
-    }
-    else {
         fetchEnemy(findEnemyId()).then(enemy => {
             enemy.hp -= 15
             console.log(enemy)
+            logText("WAPOW! The bomb did 15 damage!")
             updateEnemy(enemy)
         })
-    }
 }
 
 function useSmokeBomb() {
     fetchEnemy(findEnemyId()).then(enemy => {
         enemy.status = "smoke"
         console.log(enemy)
+        logText("You tossed a smoke bomb. Your foe's accuracy decreased!")
         updateEnemy(enemy)
     })
 }
@@ -505,17 +502,21 @@ function logText(text) {
     let i = 0;
     let txt = text;
     let speed = 50;
+    let timer = 0
 
     function typeWriter() {
         if (i < txt.length) {
             logBox.textContent += txt.charAt(i);
             i++;
             setTimeout(typeWriter, speed)
+            timer = 400
         }
     }
     disableEventListeners(allButtons)
+    disableEventListeners(pTagItems)
     typeWriter()
     setTimeout(enableEventListeners, 1500, allButtons)
+    setTimeout(enableEventListeners, 1500, pTagItems)
 }
 
 
