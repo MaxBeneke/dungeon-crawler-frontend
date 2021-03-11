@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     createGridDivs()
     createWalls()
     const startDiv = document.querySelector('div#gi1-1')
+    const exitDiv = document.querySelector('div#gi10-10')
     startDiv.appendChild(testChar)
     spawnEnemies()
     spawnTreasures()
@@ -19,6 +20,7 @@ const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
+const mainPane = document.querySelector('main#main-game')
 
 
 
@@ -27,6 +29,7 @@ const bgm = document.querySelector('audio#bgm')
 
 
 // Player info pane constants
+const infoDiv = document.querySelector('div#info')
 const playerInfo = document.querySelector('div#character-info')
 const playerStat = document.querySelector('div#player-stat')
 const playerPortrait = document.querySelector('img#portrait')
@@ -43,6 +46,8 @@ const itemInfo = document.querySelector('div#item-stat')
 const audioOption = document.querySelector('div#audio-option')
 const audionOnBtn = document.querySelector('button#radio-on')
 const audionOffBtn = document.querySelector('button#radio-off')
+
+
 
 
 
@@ -281,6 +286,18 @@ function levelUp(player) {
 
 function gameOver() {
     console.log("OH SHOOT IT'S GAME OVER FOR YOU!")
+
+    const gameOverImage = document.createElement('img')
+    gameOverImage.src = "assets/gameover.jpeg"
+    gameOverImage.className = "gameover"
+
+    const gameOverMsg = document.createElement('p')
+    gameOverMsg.textContent = "OH SHOOT IT'S GAME OVER FOR YOU!"
+    gameOverMsg.className = "gameover"
+
+    mainPane.innerHTML = " "
+
+    mainPane.append(gameOverMsg, gameOverImage)
 }
 
 const createGridDivs = () => {
@@ -518,5 +535,9 @@ worldCommand.addEventListener('click', e => {
 
 audionOnBtn.addEventListener('click', playBGM)
 audionOffBtn.addEventListener('click', stopBGM)
+
+
+
+
 
 
