@@ -15,6 +15,7 @@ const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
 const battleButtons = document.querySelector('div#battle-buttons')
 const logBox = document.querySelector('div#log')
+const allButtons = document.querySelectorAll('button')
 const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
@@ -216,11 +217,6 @@ function battleSpecial(id) {
     })
 }
 
-// Move to the bottom of the file for now
-// function showItems() {
-//     // Render the Item Div 
-// }
-
 function useItem(itemId) {
 
 }
@@ -291,7 +287,6 @@ const createGridDivs = () => {
     }
 }
 
-
 // Helper functions
 
 function moveLeft() {
@@ -342,7 +337,7 @@ function moveCharacter(e) {
         case 38: // Up
             if (up.classList.contains('enemy')) {
                 startBattle(parseInt(up.dataset.id))
-            } else if (up.classLit.contains('wall')) {
+            } else if (up.classList.contains('wall')) {
                 return;
             }
             else if (up.classList.contains('treasure')) {
@@ -422,15 +417,73 @@ function pickupTreasure(id) {
             const targetDiv = testChar.closest('div')
             targetDiv.classList.remove('treasure')
             console.log(targetDiv)
-            logBox.textContent = `You got a ${possession.item.name}! ${possession.item.description}`
+            logText(`You got a ${possession.item.name}! ${possession.item.description}`)
         })
 
 
 }
 
+function useMinorHealing() {
+    fetchPlayer().then(player => {
+        console.log(player.hp)
+        let healthBonus = player.level
+        player.hp += healthBonus + 12
+        updatePlayer(player)
+    })
+}
+
+function useMajorHealing() {
+    fetchPlayer().then(player => {
+        console.log(player.hp)
+        let healthBonus = (player.level * 2)
+        player.hp += healthBonus + 23
+        updatePlayer(player)
+    })
+}
+
+function useBomb() {
+    if (mapContainer.style.display != "none") {
+        logText("You can't use this outside of battle!")
+    }
+    else {
+        fetchEnemy(findEnemyId()).then(enemy => {
+            enemy.hp -= 15
+            console.log(enemy)
+            updateEnemy(enemy)
+        })
+    }
+}
+
+function useSmokeBomb() {
+    if (mapContainer.style.display != "none") {
+        logText("You can't use this outside of battle!")
+    }
+    else {
+        fetchEnemy(findEnemyId()).then(enemy => {
+            enemy.status = "smoke"
+            updateEnemy(enemy)
+        })
+}
+}
+function checkEnemyStatus() {
+}
+
 function logText(text) {
-    // Animation set up? Timeout?
-    logBox.textContent = text
+    logBox.textContent = ""
+    let i = 0;
+    let txt = text;
+    let speed = 50;
+
+    function typeWriter() {
+        if (i < txt.length) {
+            logBox.textContent += txt.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed)
+        }
+    }
+    disableEventListeners(allButtons)
+    typeWriter()
+    setTimeout(enableEventListeners(allButtons), 2000)
 }
 
 
@@ -499,4 +552,12 @@ worldCommand.addEventListener('click', e => {
             break;
     }
 })
+
+function disableEventListeners(array) {
+    array.forEach(element => element.style.pointerEvents = "none")
+}
+
+function enableEventListeners(array) {
+    array.forEach(element => element.style.pointerEvents = "all")
+}
 
