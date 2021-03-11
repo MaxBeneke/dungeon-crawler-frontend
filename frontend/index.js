@@ -20,6 +20,7 @@ const worldCommand = document.querySelector('div#command')
 const battleCommand = document.querySelector('div#battle-command')
 const position = { x: 1, y: 1 }
 const url = "http://localhost:3000"
+const attackQuotes = ["A direct hit!", "Take that, loser.", "*Smack* Right in the kisser!", "Ouch! That's gotta hurt!"]
 
 
 
@@ -61,9 +62,6 @@ function getRandomNum(min, max) {
 
 function rollCrit() {
     const crit = getRandomNum(1, 13) == 12 ? true : false
-    if (crit) {
-        logText("It's a critical hit!")
-    }
     return crit
 }
 
@@ -102,6 +100,7 @@ function updatePlayer(player) {
         .then(res => res.json())
         .then(updatedPlayer => {
             checkPlayerStatus(updatedPlayer)
+            renderPlayer(updatedPlayer)
         })
 }
 
@@ -111,9 +110,6 @@ function checkPlayerStatus(player) {
     }
     else if (player.xp >= 100) {
         levelUp(player)
-    }
-    else if (mapContainer.style.display == "none") {
-        logText("The Battle Continues")
     }
     else {
         return
@@ -192,9 +188,11 @@ battleButtons.addEventListener('click', e => {
 
 function battleAttack(id) {
     fetchPlayer().then(player => {
+        let i = getRandomNum(0, 4)
         const crit = rollCrit() ? 2 : 1
         let atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
         atk = atk * crit
+        crit == 2 ? logText("It's a critical hit!") : logText(attackQuotes[i])
         fetchEnemy(id).then(enemy => {
             enemy.hp -= atk
             console.log(enemy)
@@ -224,13 +222,42 @@ function battleSpecial(id) {
     })
 }
 
-function useItem(itemId) {
+function useItem(itemId, possesionId) {
+    if (itemId == 2 && mapContainer.style.display != "none") {
+        logText("You can't use that outside of battle!")
+        return;
+    }
+    if (itemId == 4 && mapContainer.style.display != "none") {
+        logText("You can't use that outside of battle!")
+        return;
+    }
 
+    fetch(`${url}/possessions/${possesionId}`, {
+        method: 'DELETE'
+    }).then(res => res.json()).then(possession => fetchItems())
+    switch (itemId) {
+        case 1:
+            useMinorHealing()
+            break;
+        case 2:
+            useSmokeBomb()
+            break;
+        case 3:
+            useMajorHealing()
+            break;
+        case 4:
+            useBomb()
+            break;
+    }
 }
 
 function enemyAttack(id) {
     let atk;
     fetchEnemy(id).then(enemy => {
+        if (enemy.status == "smoke" && Math.floor(getRandomNum(1, 5)) == 2) {
+            logText("The attack missed!")
+            return
+        }
         switch (enemy.xp) {
             case 25:
                 atk = Math.ceil(getRandomNum(3, 7))
@@ -380,7 +407,7 @@ function moveCharacter(e) {
             }
             else { moveDown() }
             break;
-s
+
         default:
             return;
     }
@@ -425,6 +452,7 @@ function pickupTreasure(id) {
             targetDiv.classList.remove('treasure')
             console.log(targetDiv)
             logText(`You got a ${possession.item.name}! ${possession.item.description}`)
+            fetchItems()
         })
 
 
@@ -435,6 +463,7 @@ function useMinorHealing() {
         console.log(player.hp)
         let healthBonus = player.level
         player.hp += healthBonus + 12
+        logText(`You healed ${healthBonus + 12} HP!`)
         updatePlayer(player)
     })
 }
@@ -444,6 +473,7 @@ function useMajorHealing() {
         console.log(player.hp)
         let healthBonus = (player.level * 2)
         player.hp += healthBonus + 23
+        logText(`You healed ${healthBonus + 23} HP!`)
         updatePlayer(player)
     })
 }
@@ -462,18 +492,13 @@ function useBomb() {
 }
 
 function useSmokeBomb() {
-    if (mapContainer.style.display != "none") {
-        logText("You can't use this outside of battle!")
-    }
-    else {
-        fetchEnemy(findEnemyId()).then(enemy => {
-            enemy.status = "smoke"
-            updateEnemy(enemy)
-        })
+    fetchEnemy(findEnemyId()).then(enemy => {
+        enemy.status = "smoke"
+        console.log(enemy)
+        updateEnemy(enemy)
+    })
 }
-}
-function checkEnemyStatus() {
-}
+
 
 function logText(text) {
     logBox.textContent = ""
@@ -490,11 +515,10 @@ function logText(text) {
     }
     disableEventListeners(allButtons)
     typeWriter()
-    setTimeout(enableEventListeners(allButtons), 2000)
+    setTimeout(enableEventListeners, 1500, allButtons)
 }
 
 
-document.addEventListener('keydown', moveCharacter)
 
 
 /////////////////////////////////////////////////////////////////////
@@ -525,16 +549,20 @@ function renderPlayer(player) {
 }
 
 fetchPlayer()
-.then(player => renderPlayer(player))
+    .then(player => renderPlayer(player))
 
 ///////////////////////////////////////////////////////////////
 // Get current items from player and show on the right pane
 
 function fetchItems() {
+    itemInfo.innerHTML = ''
     fetchPlayer().then(player => {
         player.possessions.forEach(possession => {
+            console.log('fetching')
             const pTag = document.createElement('p')
             pTag.textContent = possession.item.name
+            pTag.dataset.possessionId = possession.id
+            pTag.dataset.itemId = possession.item.id
             const divTag = document.createElement('div')
             divTag.textContent = possession.item.description
             itemInfo.append(pTag, divTag)
@@ -549,7 +577,7 @@ fetchItems()
 
 worldCommand.addEventListener('click', e => {
     switch (e.target.id) {
-        case "stat": 
+        case "stat":
             playerInfo.className = ""
             itemInfo.className = "hidden"
             audioOption.className = "hidden"
@@ -560,26 +588,31 @@ worldCommand.addEventListener('click', e => {
             audioOption.className = "hidden"
             break;
         case "option":
-            audioOption.className =""
+            audioOption.className = ""
             itemInfo.className = "hidden"
             playerInfo.className = "hidden"
     }
 })
 
-<<<<<<< HEAD
 function disableEventListeners(array) {
     array.forEach(element => element.style.pointerEvents = "none")
 }
 
 function enableEventListeners(array) {
     array.forEach(element => element.style.pointerEvents = "all")
+    console.log('enabled')
 }
-=======
 ///////////////////////////////////////////////////////////////
 // Add eventlisterns for background bgm, click on and off
 
 audionOnBtn.addEventListener('click', playBGM)
 audionOffBtn.addEventListener('click', stopBGM)
+document.addEventListener('keydown', moveCharacter)
+itemInfo.addEventListener('click', e => {
+    if (e.target.tagName === "P") {
+        useItem(parseInt(e.target.dataset.itemId), parseInt(e.target.dataset.possessionId))
+    }
+})
 
->>>>>>> 2f93ca6336dbf775c20d85030459f09d7397faf8
+
 

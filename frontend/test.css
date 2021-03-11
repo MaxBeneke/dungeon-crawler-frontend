@@ -189,6 +189,15 @@ div#item-stat p, div#item-stat div{
     margin-bottom: 10px;
 }
 
+div#item-stat p {
+    border: solid grey;
+    background-color: lightgrey;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+}
+
 div#item-stat div:not(:last-child)  {
     border-bottom: 2px solid black
 }
@@ -212,6 +221,5 @@ div.radio-input button {
     padding: 10px;
     margin: 15px;
 }
-
 
 
