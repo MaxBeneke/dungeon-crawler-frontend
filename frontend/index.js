@@ -147,7 +147,7 @@ function updateEnemy(enemy) {
 
 function battleWin(enemyId) {
     if (enemyId == 9) {
-        setTimeout(gameWon, 1600);
+        setTimeout(gameWon, 1800);
     } else {
         let exp;
         fetchEnemy(enemyId).then(enemy => exp = enemy.xp)
@@ -173,7 +173,7 @@ function startBattle(enemyId) {
     let dialog = 1;
     fetchEnemy(enemyId)
         .then(enemy => {
-            logText(enemy.dialogue[dialog])
+            logText(`${enemy.name}: ` + enemy.dialogue[dialog])
             enemyNameHeader.textContent = enemy.name
             const img = document.createElement('img')
             img.src = enemy.image
@@ -233,7 +233,7 @@ function battleAttack(id) {
             if (enemy.hp >= 0) {
                 crit == 2 ? logText(`It's a critical hit! ${atk} damage.`) : logText(attackQuotes[i] + ` ${atk} damage.`)
             } else if (enemy.hp <= 0) {
-                logText(enemy.dialogue[0])
+                logText(`${enemy.name}: ` + enemy.dialogue[0])
             }
             console.log(enemy)
             updateEnemy(enemy)
@@ -254,7 +254,7 @@ function battleSpecial(id) {
                 if (enemy.hp >= 0) {
                     crit == 2 ? logText(`It's a critical hit! ${spAtk} damage.`) : logText(`Special attack hit for ${spAtk} damage!`)
                 } else if (enemy.hp <= 0) {
-                    logText(enemy.dialogue[0])
+                    logText(`${enemy.name}: ` + enemy.dialogue[0])
                 }
                 player.special -= 1
                 console.log(enemy)
@@ -329,7 +329,7 @@ function enemyAttack(id) {
                 atk = Math.ceil(getRandomNum(7, 12))
         }
         fetchPlayer().then(player => {
-            setTimeout(logText, 1700, enemy.dialogue[dialog])
+            setTimeout(logText, 1700, `${enemy.name}:` + enemy.dialogue[dialog])
             player.hp -= atk
             console.log(player)
             updatePlayer(player)
