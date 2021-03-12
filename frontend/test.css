@@ -51,8 +51,16 @@ div.grid-item.wall {
 }
 
 div.grid-item {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
     border: 1.5px solid darkslategrey;
     background: url('assets/floor-tile.png')
+}
+
+div.grid-item.enemy {
+    text-align: center;
+    text-justify: center;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    line-height: 64px;
 }
 
 div#sprite-div {
@@ -83,7 +91,6 @@ img#test-sprite {
 div.enemy {
     width: 64px;
     height: 64px;
-    background: url('assets/boss.png');
 }
 
 div#battle img {
