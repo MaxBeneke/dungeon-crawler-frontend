@@ -147,7 +147,7 @@ function updateEnemy(enemy) {
 
 function battleWin(enemyId) {
     if (enemyId == 9) {
-        gameWon();
+        setTimeout(gameWon, 1600);
     } else {
         let exp;
         fetchEnemy(enemyId).then(enemy => exp = enemy.xp)
@@ -244,7 +244,7 @@ function battleAttack(id) {
 function battleSpecial(id) {
     fetchPlayer().then(player => {
         const crit = rollCrit() ? 2 : 1
-        let spAtk = Math.ceil(1.5 * (Math.ceil(player.multiplier * getRandomNum(2, 6))))
+        let spAtk = Math.ceil(1.75 * (Math.ceil(player.multiplier * getRandomNum(3, 6))))
         spAtk = spAtk * crit
         console.log(spAtk)
 
@@ -524,7 +524,7 @@ function pickupTreasure(id) {
     fetch(`${url}/possessions/`, {
         method: 'POST',
         headers: { 'Content-Type': "application/json" },
-        body: JSON.stringify({ player_id: 1, item_id: id })
+        body: JSON.stringify({ player_id: globalPlayerId, item_id: id })
     })
         .then(res => res.json())
         .then(possession => {
