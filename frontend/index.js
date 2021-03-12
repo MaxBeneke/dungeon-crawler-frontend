@@ -10,12 +10,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 
 // Create global variables
+let globalTimer = null
 const mapContainer = document.querySelector('div#map')
 const battleContainer = document.querySelector('div#battle')
 const characterContainer = document.querySelector('div#character-container')
 const character = document.querySelector('img#character')
 const testChar = document.querySelector('img#test-sprite')
 const battleButtons = document.querySelector('div#battle-buttons')
+const portraitDiv = document.querySelector('div#battle-map-container')
 const logBox = document.querySelector('div#log')
 const allButtons = document.querySelectorAll('button')
 const worldCommand = document.querySelector('div#command')
@@ -136,13 +138,17 @@ function updateEnemy(enemy) {
 }
 
 function battleWin(enemyId) {
-    let exp;
-    fetchEnemy(enemyId).then(enemy => exp = enemy.xp)
-    fetchPlayer().then(player => {
-        player.xp += exp
-        updatePlayer(player)
-        endBattle(findEnemyId())
-    })
+    if (enemyId == 9) {
+        gameWon();
+    } else {
+        let exp;
+        fetchEnemy(enemyId).then(enemy => exp = enemy.xp)
+        fetchPlayer().then(player => {
+            player.xp += exp
+            updatePlayer(player)
+            endBattle(findEnemyId())
+        })
+    }
 }
 
 function findEnemyId() {
@@ -156,13 +162,19 @@ function findEnemyId() {
 // document.addEventListener('click', () => endBattle())
 // startBattle should take 2 args. Player and Enemy
 function startBattle(enemyId) {
-    mapContainer.style.display = "none"
-    battleContainer.style.display = "inline-block"
-    battleCommand.style.display = "inline-block"
-    worldCommand.style.display = "none"
-
     fetchEnemy(enemyId)
-    .then(enemy => enemyNameHeader.textContent = enemy.name)
+        .then(enemy => {
+            enemyNameHeader.textContent = enemy.name
+            const img = document.createElement('img')
+            img.src = enemy.image
+            img.alt = enemy.name
+            portraitDiv.appendChild(img)
+
+            mapContainer.style.display = "none"
+            battleContainer.style.display = "inline-block"
+            battleCommand.style.display = "inline-block"
+            worldCommand.style.display = "none"
+        })
 }
 
 function endBattle(enemyId) {
@@ -173,6 +185,9 @@ function endBattle(enemyId) {
 
     const enemyDiv = document.querySelector(`div.enemy[data-id="${findEnemyId()}"]`)
     enemyDiv.classList.remove('enemy')
+    enemyDiv.style.backgroundImage = "url(assets/floor-tile.png)"
+    const img = portraitDiv.querySelector('img')
+    portraitDiv.removeChild(img)
 }
 
 battleButtons.addEventListener('click', e => {
@@ -202,7 +217,7 @@ function battleAttack(id) {
         const crit = rollCrit() ? 2 : 1
         let atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
         atk = atk * crit
-        crit == 2 ? logText("It's a critical hit!") : logText(attackQuotes[i])
+        crit == 2 ? logText(`It's a critical hit! ${atk} damage.`) : logText(attackQuotes[i] + ` ${atk} damage.`)
         fetchEnemy(id).then(enemy => {
             enemy.hp -= atk
             console.log(enemy)
@@ -219,6 +234,7 @@ function battleSpecial(id) {
         console.log(spAtk)
 
         if (player.special > 0) {
+            crit == 2 ? logText(`It's a critical hit! ${spAtk} damage.`) : logText(`Special attack hit for ${spAtk} damage!`)
             fetchEnemy(id).then(enemy => {
                 enemy.hp -= spAtk
                 player.special -= 1
@@ -263,6 +279,7 @@ function useItem(itemId, possesionId) {
 
 function enemyAttack(id) {
     let atk;
+    logText("testing")
     // let dialogue;
     fetchEnemy(id).then(enemy => {
         if (enemy.status == "smoke" && Math.floor(getRandomNum(1, 5)) == 2) {
@@ -340,6 +357,10 @@ const createGridDivs = () => {
             mapContainer.appendChild(div)
         }
     }
+    const bossDiv = mapContainer.querySelector('div#gi10-10')
+    bossDiv.classList.add('enemy')
+    bossDiv.dataset.id = "9"
+    bossDiv.textContent = "Exit!"
 }
 
 // Helper functions
@@ -499,12 +520,12 @@ function useMajorHealing() {
 }
 
 function useBomb() {
-        fetchEnemy(findEnemyId()).then(enemy => {
-            enemy.hp -= 15
-            console.log(enemy)
-            logText("WAPOW! The bomb did 15 damage!")
-            updateEnemy(enemy)
-        })
+    fetchEnemy(findEnemyId()).then(enemy => {
+        enemy.hp -= 15
+        console.log(enemy)
+        logText("WAPOW! The bomb did 15 damage!")
+        updateEnemy(enemy)
+    })
 }
 
 function useSmokeBomb() {
@@ -521,8 +542,9 @@ function logText(text) {
     logBox.textContent = ""
     let i = 0;
     let txt = text;
-    let speed = 50;
+    let speed = 30;
     let timer = 0
+    globalTimer = true
 
     function typeWriter() {
         if (i < txt.length) {
@@ -530,6 +552,9 @@ function logText(text) {
             i++;
             setTimeout(typeWriter, speed)
             timer = 400
+            if (i == txt.length) {
+                globalTimer = null
+            }
         }
     }
     disableEventListeners(allButtons)
@@ -566,7 +591,7 @@ function renderPlayer(player) {
     playerHP.textContent = `HP ${player.hp}`
     playerExp.textContent = `EXP Points ${player.xp}`
 
-    playerAttackNames.textContent = `${player.special || 0} -- Play Dead Technique `
+    playerAttackNames.textContent = `${player.special || 0} -- Thunderbolt Attack `
 }
 
 fetchPlayer()
@@ -642,7 +667,6 @@ itemInfo.addEventListener('click', e => {
 ///////////////////////////////////////////////////////////////
 // Check if the game is won
 function gameWon() {
-    if (testChar.closest('div').id === `gi10-10`) {
         const gameWonImage = document.createElement('img')
         gameWonImage.src = "assets/gamewon.jpeg"
         gameWonImage.className = "gamewon"
@@ -653,12 +677,13 @@ function gameWon() {
 
         mainPane.innerHTML = " "
         logBox.remove()
-        gameScreen.append(gameWonMsg, gameWonImage)     
-    }
-    else {
-        window.requestAnimationFrame(gameWon)
-    }
+        gameScreen.append(gameWonMsg, gameWonImage)
 }
 
-window.requestAnimationFrame(gameWon)
+// Remove Scrolling with arrow keys
+window.addEventListener("keydown", function (e) {
+    if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);
 
