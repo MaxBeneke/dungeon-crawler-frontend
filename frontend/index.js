@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 // Create global variables
 let globalTimer = null
+let globalPlayerId = 0
+const modal = document.querySelector('div#modal')
+const logInForm = document.querySelector('form#login-handler')
+const createAccountForm = document.querySelector('form#account-handler')
 const mapContainer = document.querySelector('div#map')
 const battleContainer = document.querySelector('div#battle')
 const characterContainer = document.querySelector('div#character-container')
@@ -90,7 +94,9 @@ function createWalls() {
 }
 
 function fetchPlayer() {
-    return fetch(`${url}/players/1`).then(res => res.json())
+    if (globalPlayerId != 0) {
+        return fetch(`${url}/players/${globalPlayerId}`).then(res => res.json())
+    }
 }
 
 function fetchEnemy(id) {
@@ -133,7 +139,9 @@ function updateEnemy(enemy) {
     })
         .then(res => res.json())
         .then(updatedEnemy => {
-            updatedEnemy.hp <= 0 ? battleWin(updatedEnemy.id) : enemyAttack(updatedEnemy.id)
+            if (mapContainer.style.display == "none") {
+                updatedEnemy.hp <= 0 ? battleWin(updatedEnemy.id) : enemyAttack(updatedEnemy.id)
+            }
         })
 }
 
@@ -162,8 +170,10 @@ function findEnemyId() {
 // document.addEventListener('click', () => endBattle())
 // startBattle should take 2 args. Player and Enemy
 function startBattle(enemyId) {
+    let dialog = 1;
     fetchEnemy(enemyId)
         .then(enemy => {
+            logText(enemy.dialogue[dialog])
             enemyNameHeader.textContent = enemy.name
             const img = document.createElement('img')
             img.src = enemy.image
@@ -178,6 +188,7 @@ function startBattle(enemyId) {
 }
 
 function endBattle(enemyId) {
+
     mapContainer.style.display = "grid"
     battleContainer.style.display = "none"
     battleCommand.style.display = "none"
@@ -217,9 +228,13 @@ function battleAttack(id) {
         const crit = rollCrit() ? 2 : 1
         let atk = Math.ceil(player.multiplier * getRandomNum(2, 6))
         atk = atk * crit
-        crit == 2 ? logText(`It's a critical hit! ${atk} damage.`) : logText(attackQuotes[i] + ` ${atk} damage.`)
         fetchEnemy(id).then(enemy => {
             enemy.hp -= atk
+            if (enemy.hp >= 0) {
+                crit == 2 ? logText(`It's a critical hit! ${atk} damage.`) : logText(attackQuotes[i] + ` ${atk} damage.`)
+            } else if (enemy.hp <= 0) {
+                logText(enemy.dialogue[0])
+            }
             console.log(enemy)
             updateEnemy(enemy)
         })
@@ -234,9 +249,13 @@ function battleSpecial(id) {
         console.log(spAtk)
 
         if (player.special > 0) {
-            crit == 2 ? logText(`It's a critical hit! ${spAtk} damage.`) : logText(`Special attack hit for ${spAtk} damage!`)
             fetchEnemy(id).then(enemy => {
                 enemy.hp -= spAtk
+                if (enemy.hp >= 0) {
+                    crit == 2 ? logText(`It's a critical hit! ${spAtk} damage.`) : logText(`Special attack hit for ${spAtk} damage!`)
+                } else if (enemy.hp <= 0) {
+                    logText(enemy.dialogue[0])
+                }
                 player.special -= 1
                 console.log(enemy)
                 updatePlayer(player)
@@ -264,29 +283,42 @@ function useItem(itemId, possesionId) {
     switch (itemId) {
         case 1:
             useMinorHealing()
+            if (mapContainer.style.display == 'none') {
+                enemyAttack(findEnemyId())
+            }
             break;
         case 2:
             useSmokeBomb()
+            if (mapContainer.style.display == 'none') {
+                enemyAttack(findEnemyId())
+            }
             break;
         case 3:
             useMajorHealing()
+            if (mapContainer.style.display == 'none') {
+                enemyAttack(findEnemyId())
+            }
             break;
         case 4:
             useBomb()
+            if (mapContainer.style.display == 'none') {
+                enemyAttack(findEnemyId())
+            }
             break;
     }
 }
 
 function enemyAttack(id) {
     let atk;
-    logText("testing")
-    // let dialogue;
+    let dialog = getRandomNum(2, 5)
     fetchEnemy(id).then(enemy => {
         if (enemy.status == "smoke" && Math.floor(getRandomNum(1, 5)) == 2) {
             logText("The attack missed!")
             return
         }
         switch (enemy.xp) {
+            case 0:
+                atk = Math.ceil(getRandomNum(6, 13))
             case 25:
                 atk = Math.ceil(getRandomNum(3, 7))
                 break;
@@ -297,6 +329,7 @@ function enemyAttack(id) {
                 atk = Math.ceil(getRandomNum(7, 12))
         }
         fetchPlayer().then(player => {
+            setTimeout(logText, 1700, enemy.dialogue[dialog])
             player.hp -= atk
             console.log(player)
             updatePlayer(player)
@@ -547,7 +580,7 @@ function logText(text) {
     logBox.textContent = ""
     let i = 0;
     let txt = text;
-    let speed = 30;
+    let speed = 25;
     let timer = 0
     globalTimer = true
 
@@ -599,8 +632,7 @@ function renderPlayer(player) {
     playerAttackNames.textContent = `${player.special || 0} -- Thunderbolt Attack `
 }
 
-fetchPlayer()
-    .then(player => renderPlayer(player))
+
 
 ///////////////////////////////////////////////////////////////
 // Get current items from player and show on the right pane
@@ -608,20 +640,27 @@ fetchPlayer()
 function fetchItems() {
     itemInfo.innerHTML = ''
     fetchPlayer().then(player => {
-        player.possessions.forEach(possession => {
-            console.log('fetching')
-            const pTag = document.createElement('p')
-            pTag.textContent = possession.item.name
-            pTag.dataset.possessionId = possession.id
-            pTag.dataset.itemId = possession.item.id
-            const divTag = document.createElement('div')
-            divTag.textContent = possession.item.description
-            itemInfo.append(pTag, divTag)
-        })
+        if (player.possessions.length === 0) {
+            console.log(player.possessions)
+            const noneTag = document.createElement('p')
+            noneTag.textContent = "Tough scene. Backpack's empty."
+            itemInfo.append(noneTag)
+        } else {
+            player.possessions.forEach(possession => {
+                console.log('fetching')
+                const pTag = document.createElement('p')
+                pTag.textContent = possession.item.name
+                pTag.dataset.possessionId = possession.id
+                pTag.dataset.itemId = possession.item.id
+                const divTag = document.createElement('div')
+                divTag.textContent = possession.item.description
+                itemInfo.append(pTag, divTag)
+            })
+        }
     })
 }
 
-fetchItems()
+
 
 ///////////////////////////////////////////////////////////////
 // Add eventlisterns for world map commands, toggle on click
@@ -634,6 +673,7 @@ worldCommand.addEventListener('click', e => {
             audioOption.className = "hidden"
             break;
         case "item":
+            fetchItems()
             itemInfo.className = ""
             playerInfo.className = "hidden"
             audioOption.className = "hidden"
@@ -654,6 +694,33 @@ function enableEventListeners(array) {
     console.log('enabled')
 }
 
+//// Reset enemy health at start of game
+
+function resetEnemies() {
+    fetch(`${url}/enemies`).then(res => res.json()).then(enemies => {
+        enemies.forEach(enemy => {
+            switch (enemy.xp) {
+                case 0:
+                    enemy.hp = 50
+                    updateEnemy(enemy)
+                    break;
+                case 25:
+                    enemy.hp = 10
+                    updateEnemy(enemy)
+                    break;
+                case 50:
+                    enemy.hp = 15
+                    updateEnemy(enemy)
+                    break;
+                case 75:
+                    enemy.hp = 20
+                    updateEnemy(enemy)
+                    break;
+            }
+        })
+    })
+}
+
 
 ///////////////////////////////////////////////////////////////
 // Add eventlisterns for background bgm, click on and off
@@ -672,17 +739,17 @@ itemInfo.addEventListener('click', e => {
 ///////////////////////////////////////////////////////////////
 // Check if the game is won
 function gameWon() {
-        const gameWonImage = document.createElement('img')
-        gameWonImage.src = "assets/gamewon.jpeg"
-        gameWonImage.className = "gamewon"
+    const gameWonImage = document.createElement('img')
+    gameWonImage.src = "assets/gamewon.jpeg"
+    gameWonImage.className = "gamewon"
 
-        const gameWonMsg = document.createElement('p')
-        gameWonMsg.textContent = "You have escaped middle school!"
-        gameWonMsg.className = "gamewon"
+    const gameWonMsg = document.createElement('p')
+    gameWonMsg.textContent = "You have escaped middle school!"
+    gameWonMsg.className = "gamewon"
 
-        mainPane.innerHTML = " "
-        logBox.remove()
-        gameScreen.append(gameWonMsg, gameWonImage)
+    mainPane.innerHTML = " "
+    logBox.remove()
+    gameScreen.append(gameWonMsg, gameWonImage)
 }
 
 // Remove Scrolling with arrow keys
@@ -699,3 +766,62 @@ function restartGame () {
     updatePlayer(player) 
     location.reload()
 }
+// Handle Login 
+function handleLogin(e) {
+    e.preventDefault()
+    const playerName = e.target.login.value
+    fetch('http://localhost:3000/players')
+        .then(res => res.json())
+        .then(players => {
+            if (players.find(player => playerName === player.name)) {
+                const myPlayer = players.find(player => playerName === player.name)
+                globalPlayerId = myPlayer.id
+                fetchPlayer().then(player => renderPlayer(player))
+                logText(`Got caught skipping, huh ${myPlayer.name}? Well, that won't stop you. Try again!`)
+                modal.style.display = "none"
+                mainPane.style.display = "flex"
+                resetEnemies()
+            }
+            else
+                alert('No such player')
+        })
+}
+
+
+function handleCreateAccount(e) {
+    e.preventDefault()
+
+    const userName = e.target.account.value
+    const hp = 50
+    const level = 1
+    const xp = 0
+    const special = 4
+    const sprite = 'assets/player-portrait.png'
+
+    fetch('http://localhost:3000/players')
+        .then(res => res.json())
+        .then(players => {
+            if (players.find(player => userName === player.name)) {
+                alert(`Sorry, that player name already exist, try another...`)
+                return
+            }
+            else {
+                fetch('http://localhost:3000/players', {
+                    method: 'POST',
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name: userName, hp, level, xp, special, sprite })
+                })
+                    .then(res => res.json())
+                    .then(player => {
+                        globalPlayerId = player.id
+                        logText(`Welcome to Marsha P. Johnson Middle School, ${player.name}. Let's play hooky and head for the exit!`)
+                        fetchPlayer().then(player => renderPlayer(player))
+                        modal.style.display = "none"
+                        mainPane.style.display = "flex"
+                        resetEnemies()
+                    })
+            }
+        })
+}
+logInForm.addEventListener('submit', handleLogin)
+createAccountForm.addEventListener('submit', handleCreateAccount)
