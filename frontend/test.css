@@ -109,14 +109,16 @@ div.treasure {
 /* Styling for the log box */
 
 div#log {
-    height: 40px;
-    width: 600px;
+    height: 60px;
+    /* width: 600px; */
+    width: 100%;
     margin-top: 20px;
-    margin-bottom: auto;
-    margin-left: 380px;
+    /* margin-bottom: auto; */
+    /* margin-left: 380px; */
     text-align: center;
     border-radius: 5px;
     border: 3px solid black;
+    font-size: 25px;
 }
 
 /* Styling for the buttons */
@@ -228,20 +230,30 @@ div.radio-input button {
     margin: 15px;
 }
 
-/* Styling for the images and texts for game over and game won screens */
+/* Styling for the images and texts for game over and game won screens and continue button */
 
 img.gameover, img.gamewon {
     display: block;
     width: 500px;
     height: 500px;
-    margin: 80px auto;
+    margin: 70px auto;
 }
 
 p.gameover, p.gamewon {
     font-size: 30px;
     text-align: center;
-    margin: 80px;
+    margin: 70px;
     display: block;
+}
+
+button.continue-btn {
+    display: block;
+    padding: 5px;
+    width: 150px;
+    border-radius: 10px;
+    background: transparent;
+    border: 3px black solid;
+    margin: 0px auto;
 }
 
 /* Position and styling for enemy name */

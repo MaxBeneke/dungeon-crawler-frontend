@@ -339,9 +339,14 @@ function gameOver() {
     gameOverMsg.textContent = "OH SHOOT IT'S GAME OVER FOR YOU!"
     gameOverMsg.className = "gameover"
 
+    const continueBtn = document.createElement('button')
+    continueBtn.textContent = "Restart Game"
+    continueBtn.className = "continue-btn"
+    continueBtn.addEventListener('click', restartGame)
+
     mainPane.innerHTML = " "
     logBox.remove()
-    gameScreen.append(gameOverMsg, gameOverImage)
+    gameScreen.append(gameOverMsg, gameOverImage, continueBtn)
 }
 
 const createGridDivs = () => {
@@ -687,3 +692,10 @@ window.addEventListener("keydown", function (e) {
     }
 }, false);
 
+
+// Start a new game/Continue after game over
+function restartGame () {
+    const player = {'id': 1, 'hp': 50, 'name': "James", 'level': 1, 'xp': 0, 'special': 4, 'sprite': 'assets/player-portrait.png'}
+    updatePlayer(player) 
+    location.reload()
+}
